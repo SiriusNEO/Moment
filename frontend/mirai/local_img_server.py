@@ -1,4 +1,4 @@
-from db.db_config import IMG_PATH
+from frontend.mirai.frontend_config import IMG_PATH
 from graia.application.message.elements.internal import Image
 
 tmp_file_name = "tmp"

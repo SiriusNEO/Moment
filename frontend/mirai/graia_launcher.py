@@ -1,19 +1,38 @@
 import asyncio
 
+# import: graia
 from graia.broadcast import Broadcast
 from graia.application import GraiaMiraiApplication, Session
 from graia.application.message.chain import MessageChain
 from graia.application.message.elements.internal import Plain, At
 from graia.application.group import Group, Member
 
-from mirai.mirai_config import *
+# import: frontend
+from frontend.mirai.msg_parser import *
+from frontend.mirai.frontend_config import *
 
-from event.msg_handler import 
+from model.message import Message
+from model.error import Error
+from model.bot import Bot
 
+from plugins.db.database import Database_Plugin
+from plugins.replier.replier import Replier_Plugin
+
+"""
+    Bot initialization
+"""
+database_plugin = Database_Plugin()
+replier = Replier_Plugin()
+
+bot = Bot(name="mom")
+bot.install(database_plugin)
+bot.install(replier, database_plugin.database)
+
+"""
+    Graia initialization
+"""
 loop = asyncio.get_event_loop()
-
 bcc = Broadcast(loop=loop)
-
 app = GraiaMiraiApplication(
     broadcast=bcc,
     connect_info=Session(
@@ -24,8 +43,9 @@ app = GraiaMiraiApplication(
     )
 )
 
-# listen
-
+"""
+    listen method
+"""
 @bcc.receiver("GroupMessage")
 async def group_message_listener(app: GraiaMiraiApplication,
                                  group: Group,
@@ -35,12 +55,26 @@ async def group_message_listener(app: GraiaMiraiApplication,
     if group.id == WORKING_GROUP:
         message = await graia2moment(app, graia_chain, member.id)
         
+        message.display()
+
         # handle message
-        message_handle(message)
 
-# send 
+        for plugin in bot.installed_plugins:
+            reply = plugin.handle_message(message)
+            if type(reply) == Message:
+                await send_group_message(reply)
+                break
+            else:
+                assert type(reply) == Error
+                print(reply.what)
 
-async def send_group_message(graia_chain: MessageChain):
+"""
+    send method
+"""
+async def send_group_message(message: Message):
+    graia_chain = await moment2graia(message)
     await app.sendGroupMessage(WORKING_GROUP, graia_chain)
 
 app.launch_blocking()
+
+print("[Moment] FrontEnd Graia started.")

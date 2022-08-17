@@ -1,20 +1,15 @@
 from model.message import Message
+from plugins.db.db_event import *
+from plugins.db.plugin_config import *
 
-from model.event import *
 
-from db.db_config import *
-from event.event_config import *
-
-"""
-    data base part
-"""
-
-def assign_find(text: str, match_assigns: list):
-    for ind in range(len(match_assigns)):
-        pos = text.find(match_assigns[ind])
+def assign_find(text: str, assign_op: list):
+    for ind in range(len(assign_op)):
+        pos = text.find(assign_op[ind])
         if pos != -1:
             return pos, ind
     return -1, None
+
 
 def bracket_parse(text: str, left: str, right: str):
     text = text.strip(' ')
@@ -30,7 +25,8 @@ def bracket_parse(text: str, left: str, right: str):
 
     return None
 
-def assign_parse(text: str, match_assigns: list):
+
+def assign_parse(text: str, assign_op: list):
     ret = list()
     
     assigns = text.split(SPLIT)
@@ -40,7 +36,7 @@ def assign_parse(text: str, match_assigns: list):
         if assign == "":
             continue
 
-        assign_pos, assign_typ = assign_find(assign, match_assigns)
+        assign_pos, assign_typ = assign_find(assign, assign_op)
 
         # no assign character
         if assign_pos == -1:
@@ -54,6 +50,7 @@ def assign_parse(text: str, match_assigns: list):
     
     return ret
 
+
 def index_parse(text: str):
     if text == "":
         return []
@@ -62,6 +59,7 @@ def index_parse(text: str):
         return [[TAG_ID, text, 0]]
     
     return None
+
 
 def modify_word_parse(text: str):
     if text == WORD_DEL:
@@ -84,20 +82,8 @@ def one_database_parse(text: str, left: str, right: str):
             return None
 
         # new
-        if left == "[" and not str.isalpha(text[0]):
+        if not str.isalpha(text[0]):
             return None
-        elif left == "<":
-            if len(text) < len(REG_CMD) or text[0:len(REG_CMD)] != REG_CMD:
-                return None
-            else:
-                text = text[len(REG_CMD):]
-                text = text.strip(' ')
-        elif left == "{":
-            if len(text) < len(ALIAS_CMD) or text[0:len(ALIAS_CMD)] != ALIAS_CMD:
-                return None
-            else:
-                text = text[len(ALIAS_CMD):]
-                text = text.strip(' ')
 
         assigns = assign_parse(text, MODIFY_ASSIGN)
 
@@ -155,31 +141,16 @@ def one_database_parse(text: str, left: str, right: str):
     
     return ret
 
+"""
+    Parsing database cmd
+    return None: parse failed, not a valid database command
+"""
 def database_cmd_parse(raw: Message):
     if raw.text != None:
-        # root command first
-
-        # user command next
-        
-        cm_event = one_database_parse(raw.text, '[', ']')
+        cm_event = one_database_parse(raw.text, INDEX_SYMBOL[0], INDEX_SYMBOL[1])
 
         if cm_event != None:
-            cm_event.target_db = CM_PATH
             cm_event.quote = raw.quote
             return cm_event
-
-        user_event = one_database_parse(raw.text, '<', '>')
-
-        if user_event != None:
-            user_event.target_db = USER_PATH
-            user_event.quote = raw.quote
-            return user_event
-
-        alias_event = one_database_parse(raw.text, '{', '}')
-
-        if alias_event != None:
-            alias_event.target_db = ALIAS
-            alias_event.quote = raw.quote
-            return alias_event
 
     return None

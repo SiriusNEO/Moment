@@ -1,8 +1,6 @@
 # Moment
 
-新一代简单、便于部署、可移植的键值对回复（key-value）群聊机器人。
-
-**注意：**此项目处于开发状态（而且作者可能会咕咕咕比较久），目前功能尚不完善且 API 可能发生巨大变动！
+新一代便携式群聊气氛机器人。
 
 
 
@@ -14,47 +12,34 @@
 
 可以方便更换框架。
 
-目前支持的框架：
-
-- [GraiaApplication](https://github.com/GraiaProject/Application)（v4）
-
 ### 功能简单
 
-机器人发消息只会有两种事件：
+机器人发消息只会有两种情况：
 
-- 消息触发（Msg），由 `msg_handler` 转为 `event`
+- 消息触发（Msg）
   - 管理级命令
-  - 数据库命令
+  - 用户级命令
   - key / full
-  - at_who / qt_who（群聊中有谁被 @ 了或被回复了）
-- 主动触发（Async），由 `async_handler` 转为 `event`
+  - 回复 bot
+- 主动触发（Async）
   - 开机触发
   - 时间触发
-  - 随机触发
+  - 随机臊皮
 
 ### 轻小的数据库
-
-由于数据规模很小，数据库统一采用 `.json` 读写，不使用任何外部数据库。
 
 ##### 信息数据库
 
 ```
-(int)  (list)   (list)   (list)   (str)   (int)    (int)    (str)
- id     cm    	 key      full    time   at_who   qt_who     ps
+(int)  (msg)   (msg)   (msg)   (str)   (str)
+ id    info    key     full    time    tag
 ```
 
 ##### 用户数据库
 
 ```
-(int)  (int)  (str)  (msg)  (int)  (int)
-id     qq     name   prof   priv   coin
-```
-
-##### 命令别名数据库
-
-```
-(int)	(str)	 (str)
-id		alias	  cmd
+(int)  (str)  (msg)  (int)  (int)
+qq     name   prof   priv   coin
 ```
 
 ### 命令
@@ -65,36 +50,50 @@ id		alias	  cmd
 
   强行令此机器人停止一切响应
 
+- `study`
 
-##### 数据库核心命令
+  此机器人开始收集群聊数据，培养数据库。
 
-通用格式：
+  `study`  得到的数据，`tag` 会被打上
 
-```
-[index] modify
-```
+##### 信息数据库核心命令
 
-关键字：
+- 指定/查询：
 
-```
-%this: 表示此值为其引用的这句话
-tag_name: 表示对应的 tag 名字
+`[id]`
 
-del: 删除
-clr: 清空, 重置成空数据条
-```
+如果想依赖其它关键字进行查询，请使用
 
-一个示例：
+`[info=xxx] `
 
-```
-[key=test1] key=test2
-```
+- 如果要修改，请使用
 
-表示访问信息数据库，把所有 `key=test1` 的信息的 `key` 修改成 `test2`
+`[id] info=xxx` 
 
-## Thanks
+这样修改。（注意，等号后面都算内容，因此多个条目修改请多次进行）
 
-感谢这些项目，没有它们就没有 Moment。
+对于富文本信息，可以直接“回复”某个内容，然后
 
-- [mirai](https://github.com/mamoe/mirai) 高效率 QQ 机器人支持库
-- [GraiaApplication](https://github.com/GraiaProject/Application)  基于 mirai-api-http 的 Python 框架
+`[id] info`  来更新
+
+- 如果需要删除：
+
+`[id] del`
+
+##### 用户数据库核心命令
+
+- 查询
+
+信息数据库中的方括号换成尖括号即可。
+
+- 修改
+
+对于用户数据库，低权限用户不可以指定对象，只能修改自己的内容。
+
+直接 `name=`
+
+对于管理员，使用
+
+`<qq> name=`
+
+进行修改。

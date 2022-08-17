@@ -1,4 +1,4 @@
 # This created a handler
 # mirai -> graia -> moment
 
-import mirai.graia_event_handler
+import frontend.mirai.graia_launcher

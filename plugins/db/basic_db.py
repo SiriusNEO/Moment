@@ -2,40 +2,37 @@ import json
 import os
 
 from model.error import Error
-from model.event import TagPair
-from model.message import Message
+from model.message import *
+from plugins.db.db_event import TagPair
 
-from event.event_config import WORD_DEL, WORD_CLR
-
-from db.db_config import COL_T, MODIFY_THRESHOLD, SHADOW_CODE, ID
+from plugins.db.plugin_config import WORD_DEL, WORD_CLR, SHADOW_CODE, ID
 
 class DataBase:
 
     path: str
     storage: list
+    tag_type: dict
 
     def __init__(self, path):
         self.path = path
         if os.path.exists(path):
             with open(path, "r") as fp:
-                self.storage = list(json.load(fp))
+                self.storage = list(json.load(fp, object_hook=decode_hook))
         else:
             print("create database: ", path)
             self.storage = list()
             with open(path, "w") as fp:
-                json.dump(self.storage, fp)
+                json.dump(self.storage, fp, cls=MessageJSONEncoder)
+        
+        self.tag_type = {}
         
         print("database {0} init finish.".format(path))
         print("storage: ", self.storage)
     
     def write_back(self):
-        with open(path, "w") as fp:
-            json.dump(storage, fp)
-    
-    """
-        我们在 db_schedule 保证了 tag 存在 (因为此部分不同数据库有区别, 在 basic_db 里不可见)
-        这里只需要类型检查
-    """
+        with open(self.path, "w") as fp:
+            json.dump(self.storage, fp, cls=MessageJSONEncoder)
+
 
     def insert(self, line: dict()):
         storage.append(line)
@@ -45,12 +42,20 @@ class DataBase:
     def single_query(self, index: TagPair, ret: list, is_first_query: bool):
 
         for line in self.storage:
+            # 此 line 无此 tag. 注意 ID 特判
+            if index.tag != ID and index.tag not in line:
+                continue
+
             # 如果是多关键词, 匹配一个即可
-            if COL_T[index.tag] == list:
+            if self.tag_type[index.tag] == list:
                 
                 # 完全匹配
                 if index.typ == 0:
                     # 成功
+                    print("来点大家想看的", index.val == line[index.tag][0])
+                    index.val.display()
+                    line[index.tag][0].display()
+
                     if index.val in line[index.tag]:
                         if is_first_query:
                             ret.append(line)
@@ -63,12 +68,12 @@ class DataBase:
 
                 # 局部匹配
                 elif index.typ == 1:
-                    for tag in line[index.tag]:
-                        if type(tag) != Message:
+                    for content in line[index.tag]:
+                        if type(content) != Message:
                             return Error("类型错误，对非信息关键词执行模糊匹配")
                         else: 
                             # 匹配成功
-                            if tag.text != None and tag.text.find(index.val.text) != -1:
+                            if content.text is not None and index.val.text != "" and content.text.find(index.val.text) != -1:
                                 if is_first_query:
                                     ret.append(line)
                                     continue
@@ -84,16 +89,17 @@ class DataBase:
             else:
                 
                 # 单关键词需要检查类型
-                if type(index.val) != COL_T[index.tag]:
+                if type(index.val) != self.tag_type[index.tag]:
                     return Error("查询类型不匹配")
-
+                
                 # 完全匹配
                 if index.typ == 0:
                     # 特判 id
-                    if index.tag == ID and self.storage.index(line) == index.val:
-                        if is_first_query:
-                            ret.append(line)
-                            continue
+                    if index.tag == ID:
+                        if self.storage.index(line) == index.val:
+                            if is_first_query:
+                                ret.append(line)
+                                continue
                     # 成功
                     elif index.val == line[index.tag]:
                         if is_first_query:
@@ -108,13 +114,13 @@ class DataBase:
                 # 局部匹配
                 elif index.typ == 1:
                     if index.tag == ID or type(line[index.tag]) != Message:
-                        return Error("类型错误，对非信息关键词执行模糊匹配")
+                        return Error("类型错误，对非信息类关键词执行模糊匹配")
                     else:
                         # 成功
-                        if line[index.tag].text != None and line[index.tag].text.find(index.val.text) != -1:
+                        if line[index.tag].text != None and index.val.text != "" and line[index.tag].text.find(index.val.text) != -1:
                             if is_first_query:
-                                    ret.append(line)
-                                    continue
+                                ret.append(line)
+                                continue
                         # 失败
                         else:
                             if not is_first_query:
@@ -146,11 +152,11 @@ class DataBase:
         if modify.tag == ID:
             return Error("禁止修改id")
         
-        if modify.typ >= 1 and COL_T[modify.tag] != list:
+        if modify.typ >= 1 and self.tag_type[modify.tag] != list:
             return Error("此数据条目不支持list操作！")
         else:
             # 奇妙的逻辑
-            if COL_T[modify.tag] != type(modify.val) and (COL_T[modify.tag] == list and type(modify.val) != Message):
+            if self.tag_type[modify.tag] != type(modify.val) and (self.tag_type[modify.tag] == list and type(modify.val) != Message):
                 return Error("修改数据条目类型不匹配！")
         
     
@@ -160,7 +166,7 @@ class DataBase:
         for line in lines:
             # 单点修改
             if modify.typ == 0:
-                if COL_T[modify.tag] == list:
+                if self.tag_type[modify.tag] == list:
                     line[modify.tag] = list()
                     line[modify.tag].append(modify.val)
                 else:
@@ -172,8 +178,10 @@ class DataBase:
             elif modify.typ == 2:
                 line[modify.tag].remove(modify.val)
             else:
-                return Error("未知修改类型")
-
+                return Error("未知修改类型: {}".format(modify.typ))
+    """
+        返回两个 list, 表示消息与消息的 
+    """
     def query(self, indices: list):
         ret = list()
 
@@ -189,10 +197,12 @@ class DataBase:
             
         ret_id = list()
 
+        # id 直接强行赋值, 不储存
         for line in ret:
             ret_id.append(self.storage.index(line))
 
         return ret, ret_id
+
 
     def modify(self, indices: list, modifies: list, word: str):
         # id is no need
@@ -200,10 +210,6 @@ class DataBase:
 
         if type(lines) == Error:
             return lines
-        
-        if len(lines) >= MODIFY_THRESHOLD:
-            # to do: privilege validate
-            return Error("修改过多！")
 
         if word != None and len(modifies) >= 1:
             return Error("修改不可同时与其它修改共存")
@@ -230,6 +236,7 @@ class DataBase:
             for modify in modifies:
                 self.single_modify(lines, modify)
     
+
     def new(self, modifies: list):
         new_line = [dict()]
         new_line[0][SHADOW_CODE] = id(new_line[0])

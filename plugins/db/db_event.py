@@ -5,7 +5,7 @@ class TagPair:
     tag: str
     val: object
 
-    # 使用 ASSIGN (see event_config) 的下标代表不同类型
+    # 使用 ASSIGN (see plugin_config) 的下标代表不同类型
     typ: int
 
     def __init__(self, tag, val, typ):
@@ -16,51 +16,50 @@ class TagPair:
     def __repr__(self):
         return "<tag: {0}, val: {1}, typ: {2}>".format(self.tag, self.val, self.typ)
 
-class BaseEvent:
+"""
+    The basic class of event
+"""
+class BaseDatabaseEvent:
 
     quote: "Message"
+    ...
 
-    def __init__(self):
-        pass
-    
-    def tell(self):
-        pass
-
-class NewEvent(BaseEvent):
-
-    target_db: str
+"""
+    New event
+"""
+class NewEvent(BaseDatabaseEvent):
 
     # a list of TagPair
     modifies: list
 
     def __init__(self):
         super()
-        self.target_db = None
         self.modifies = list()
 
     def tell(self):
         print("new event")
         print("modifies list: ", self.modifies)
 
-class QueryEvent(BaseEvent):
-
-    target_db: str
+"""
+    Query event
+"""
+class QueryEvent(BaseDatabaseEvent):
     
     # a list of TagPair
     indices: list
 
     def __init__(self):
         super()
-        self.target_db = None
         self.indices = list()
     
     def tell(self):
         print("query event")
         print("indices list: ", self.indices)
 
-class ModifyEvent(BaseEvent):
-
-    target_db: str
+"""
+    Modify event
+"""
+class ModifyEvent(BaseDatabaseEvent):
 
     # a list of TagPair
     indices: list
@@ -73,7 +72,6 @@ class ModifyEvent(BaseEvent):
 
     def __init__(self):
         super()
-        self.target_db = None
         self.indices = list()
         self.modifies = list()
         self.word = None
