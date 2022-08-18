@@ -27,10 +27,13 @@ def save_image(data: bytes, file_name=tmp_file_name) -> str:
 
 
 class Picture:
-    pic_url: str
-    pic_bytes: bytes
-    pic_path: str
-
+    
+    """
+        Three storage approach:
+        - pic_url: str
+        - pic_bytes: bytes
+        - pic_path: str
+    """
     def __init__(self, pic_url: str, pic_path = None, pic_bytes = None):
         self.pic_url = pic_url
         self.pic_path = pic_path

@@ -20,22 +20,32 @@ from core.bot import Bot
 from plugins.help.plugin import Help_Plugin
 from plugins.db.plugin import Database_Plugin
 from plugins.replier.plugin import Replier_Plugin
+from plugins.random.plugin import Random_Plugin
+from plugins.touhou.plugin import Touhou_Plugin
+
+# import: log
+from utils.log import Log
 
 """
     Bot initialization
 """
+bot = Bot(
+            name="moment",
+            platform="Graia v4",
+            env="CentOS"
+        )
+
 help_plugin = Help_Plugin()
 database_plugin = Database_Plugin()
 replier_plugin = Replier_Plugin()
+random_plugin = Random_Plugin()
+touhou_plugin = Touhou_Plugin()
 
-bot = Bot(
-        name="moment",
-        platform="Graia v4",
-        env="CentOS"
-        )
 bot.install(help_plugin, bot)
 bot.install(database_plugin)
 bot.install(replier_plugin, database_plugin.database)
+bot.install(random_plugin)
+bot.install(touhou_plugin)
 
 """
     Graia initialization
@@ -76,20 +86,26 @@ async def group_message_listener(app: GraiaMiraiApplication,
 
         for plugin in bot.installed_plugins:
             reply = plugin.handle_message(message)
-            if type(reply) == Message:
+            if isinstance(reply, Message):
                 await send_group_message(reply)
                 break
             else:
-                assert type(reply) == Error
-                print(reply.what)
+                assert isinstance(reply, Error)
+                if reply.urge is not None:
+                    reply_error = Message()
+                    reply_error.text = "{}: {}".format(reply.urge, reply.what)
+                    await send_group_message(reply_error)
+                    break
+                else:
+                    Log.info("<{}>: ".format(plugin.get_name()), reply.what)
 
 """
     send method
 """
 async def send_group_message(message: Message):
-    graia_chain = await moment2graia(message)
+    graia_chain = await moment2graia(app, message)
     await app.sendGroupMessage(WORKING_GROUP, graia_chain)
 
 app.launch_blocking()
 
-print("[Moment] FrontEnd Graia started.")
+Log.info("[Moment] FrontEnd Graia started.")

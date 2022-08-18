@@ -21,9 +21,12 @@ class Database_Plugin(Plugin):
     def setup(self):
         self.database = DataBase(CM_PATH)
         self.database.tag_type["id"] = int
+        super().setup()
 
 
     def handle_message(self, message: Message) -> Union[Error, Message]:
+        assert self._setup_flag
+
         event = database_cmd_parse(message)
 
         if event is None:

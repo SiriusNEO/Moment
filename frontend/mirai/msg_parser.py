@@ -4,6 +4,8 @@ from graia.application.message.chain import MessageChain
 from graia.application import GraiaMiraiApplication
 from graia.application.message.elements.internal import Plain, Image, Quote, At, Source
 
+from frontend.mirai.frontend_config import WORKING_GROUP
+
 """
     graia message to moment message
 """
@@ -43,9 +45,15 @@ async def graia2moment(app: GraiaMiraiApplication,
 """
     moment message to graia message
 """
-async def moment2graia(message: Message):
+async def moment2graia(app: GraiaMiraiApplication, message: Message):
 
     chain_list = list()
+
+    if message.at is not None:
+        # At fails in this version
+        # chain_list.append(At(message.at)) 
+        member_info = await app.getMemberInfo(message.at, WORKING_GROUP)
+        chain_list.append(Plain("@" + member_info.name + " "))
 
     if message.text != None:
         chain_list.append(Plain(message.text))

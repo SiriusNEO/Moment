@@ -14,7 +14,7 @@ class Bot:
         self.installed_plugins_name = []
 
     def install(self, plugin: Plugin, *arg):
-        plugin_name = plugin.__class__.__name__
+        plugin_name = plugin.get_name()
 
         for requirement in plugin.requirements:
             if requirement not in self.installed_plugins_name:

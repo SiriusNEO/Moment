@@ -11,12 +11,19 @@ class Plugin:
         self.requirements = requirements
         self.info = info
         self.doc = doc
+        self._setup_flag = False
+    
+    """
+        Get the plugin name (class name)
+    """
+    def get_name(self):
+        return self.__class__.__name__
 
     """
         Things that should be done when installing this plugin to bot
     """
     def setup(self):
-        pass
+        self._setup_flag = True
 
 
     """
@@ -24,7 +31,6 @@ class Plugin:
     """
     def handle_message(self, message: Message) -> Union[Message, Error]:
         pass
-
 
     """
         The unique method of this plugin. It will be created as a task in the main loop

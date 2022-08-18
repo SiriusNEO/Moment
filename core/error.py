@@ -1,7 +1,14 @@
 # 基础错误
 
 class Error:
-    what: str
+    
+    """
+        # Error info
+        what: str
 
-    def __init__(self, what):
+        # if urge is a plugin name, reply with this Error
+        urge: str
+    """
+    def __init__(self, what, urge=None):
         self.what = what
+        self.urge = urge

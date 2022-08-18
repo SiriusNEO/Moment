@@ -21,10 +21,12 @@ class Replier_Plugin(Plugin):
         database.tag_type[TAG_KEY] = list
         database.tag_type[TAG_FULL] = list
         database.tag_type[TAG_CM] = list
-
         self.database = database
+        super().setup()
 
     def handle_message(self, message: Message) -> Union[Error, Message]:
+        assert self._setup_flag
+
         key_tp = TagPair(TAG_KEY, message, 1)
         full_tp = TagPair(TAG_FULL, message, 0)
         

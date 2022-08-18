@@ -16,10 +16,14 @@ class Help_Plugin(Plugin):
 
     def setup(self, bot: Bot):
         self.bot = bot
+        super().setup()
 
     def handle_message(self, message: Message) -> Union[Error, Message]:
+        assert self._setup_flag
+
         if message.text is not None:
             cmd_args = message.text.split(" ")
+            
             if len(cmd_args) <= 2 and cmd_args[0] == HELP_COMMAND:
                 reply = Message()
                 plugin_num = len(self.bot.installed_plugins)
@@ -37,9 +41,9 @@ class Help_Plugin(Plugin):
                         if 0 <= plugin_no < plugin_num:
                             reply.text = self.bot.installed_plugins[plugin_no].doc
                         else:
-                            return Error("没有此下标的插件!")
+                            return Error("没有此下标的插件!", urge=self.get_name())
                     else:
-                        return Error("help指令第二个参数必须是整数!")
+                        return Error("help指令第二个参数必须是整数!", urge=self.get_name())
                 return reply
 
         return Error("命令不满足该插件")

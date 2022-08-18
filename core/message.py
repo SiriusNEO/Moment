@@ -3,12 +3,15 @@
 """
 
 class Message:
-    text:       str
-    pic:        "Picture"
-    quote:      "Message"
-    at:         int
-    sender:     int
+    
+    """
 
+        text:       str
+        pic:        Picture
+        quote:      Message
+        at:         int
+        sender:     int
+    """
     def __init__(self):
         
         # set None now

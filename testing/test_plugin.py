@@ -1,5 +1,5 @@
-from model.message import Message
-from model.error import Error
+from core.message import Message
+from core.error import Error
 
 from plugins.db.plugin import Database_Plugin
 from plugins.replier.plugin import Replier_Plugin
