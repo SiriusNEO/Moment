@@ -12,10 +12,10 @@ class Message:
         at:         int
         sender:     int
     """
-    def __init__(self):
+    def __init__(self, text = None):
         
         # set None now
-        self.text = None
+        self.text = text
         self.pic = None
         self.quote = None
         self.at = None

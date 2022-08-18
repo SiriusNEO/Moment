@@ -22,6 +22,8 @@ from plugins.db.plugin import Database_Plugin
 from plugins.replier.plugin import Replier_Plugin
 from plugins.random.plugin import Random_Plugin
 from plugins.touhou.plugin import Touhou_Plugin
+from plugins.translate.plugin import Translate_Plugin
+from plugins.hello.plugin import Hello_Plugin
 
 # import: log
 from utils.log import Log
@@ -40,12 +42,16 @@ database_plugin = Database_Plugin()
 replier_plugin = Replier_Plugin()
 random_plugin = Random_Plugin()
 touhou_plugin = Touhou_Plugin()
+translate_plugin = Translate_Plugin()
+hello_plugin = Hello_Plugin()
 
 bot.install(help_plugin, bot)
 bot.install(database_plugin)
 bot.install(replier_plugin, database_plugin.database)
 bot.install(random_plugin)
 bot.install(touhou_plugin)
+bot.install(translate_plugin)
+bot.install(hello_plugin)
 
 """
     Graia initialization
@@ -61,12 +67,6 @@ app = GraiaMiraiApplication(
         websocket=True  # Graia 已经可以根据所配置的消息接收的方式来保证消息接收部分的正常运作.
     )
 )
-
-"""
-    Plugin Task
-"""
-for plugin in bot.installed_plugins:
-    loop.create_task(plugin.plugin_task())
 
 """
     listen method
@@ -105,6 +105,12 @@ async def group_message_listener(app: GraiaMiraiApplication,
 async def send_group_message(message: Message):
     graia_chain = await moment2graia(app, message)
     await app.sendGroupMessage(WORKING_GROUP, graia_chain)
+
+"""
+    Plugin Task
+"""
+for plugin in bot.installed_plugins:
+    loop.create_task(plugin.plugin_task(send_group_message))
 
 app.launch_blocking()
 

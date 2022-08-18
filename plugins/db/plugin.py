@@ -138,8 +138,7 @@ class Database_Plugin(Plugin):
                 tag_pair.val = event.quote
             else:
                 text = tag_pair.val
-                tag_pair.val = Message()
-                tag_pair.val.text = text
+                tag_pair.val = Message(text)
         elif self.database.tag_type[tag_pair.tag] == int:
             if not str.isdigit(tag_pair.val):
                 return Error("{0} 应该是个整数！".format(tag_pair.tag))

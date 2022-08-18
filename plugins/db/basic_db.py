@@ -37,12 +37,12 @@ class DataBase:
             json.dump(self.storage, fp, cls=MessageJSONEncoder)
 
 
-    def insert(self, line: dict()):
+    def _insert(self, line: dict()):
         storage.append(line)
     
     # 此处在函数中对可变对象 ret 进行修改, 为引用效果
 
-    def single_query(self, index: TagPair, ret: list, is_first_query: bool):
+    def _single_query(self, index: TagPair, ret: list, is_first_query: bool):
 
         for line in self.storage:
             # 此 line 无此 tag. 注意 ID 特判
@@ -125,7 +125,7 @@ class DataBase:
                 ret.remove(line)
 
 
-    def single_modify_check(self, lines: list, modify: TagPair):
+    def _single_modify_check(self, lines: list, modify: TagPair):
         # 检查合法性, 保证不合法不发生任何修改
         
         if modify.tag == ID:
@@ -139,7 +139,7 @@ class DataBase:
                 return Error("修改数据条目类型不匹配！")
         
     
-    def single_modify(self, lines: list, modify: TagPair):
+    def _single_modify(self, lines: list, modify: TagPair):
         # 经过 check 之后无需检查合法性
         
         for line in lines:
@@ -169,7 +169,7 @@ class DataBase:
             ret = self.storage
         else:
             for i in range(len(indices)):
-                error = self.single_query(indices[i], ret, (i == 0))
+                error = self._single_query(indices[i], ret, (i == 0))
 
                 if error != None:
                     return error, None
@@ -197,7 +197,7 @@ class DataBase:
             return Error("修改不可同时与其它修改共存")
 
         for modify in modifies:
-            error = self.single_modify_check(lines, modify)
+            error = self._single_modify_check(lines, modify)
 
             if error != None:
                 return error
@@ -216,7 +216,7 @@ class DataBase:
                         line.pop(tag)
         else:
             for modify in modifies:
-                self.single_modify(lines, modify)
+                self._single_modify(lines, modify)
     
 
     def new(self, modifies: list):
@@ -227,7 +227,7 @@ class DataBase:
             if modify.typ >= 1:
                 return Error("新创建条目时禁止 list 操作")
             
-            error = self.single_modify_check(new_line, modify)
+            error = self._single_modify_check(new_line, modify)
 
             if error != None:
                 return error
@@ -237,7 +237,7 @@ class DataBase:
                     return Error("重复 tag 修改！")
 
         for modify in modifies:
-            self.single_modify(new_line, modify)
+            self._single_modify(new_line, modify)
 
         self.storage.append(new_line[0])
         

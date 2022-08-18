@@ -30,11 +30,11 @@ class Plugin:
         Message 2 Reply
     """
     def handle_message(self, message: Message) -> Union[Message, Error]:
-        pass
+        return Error("Unimplemented")
 
     """
-        The unique method of this plugin. It will be created as a task in the main loop
+        It will be created as a task in the main loop
     """
-    async def plugin_task(self) -> Message:
+    async def plugin_task(self, send_method):
         pass
     
