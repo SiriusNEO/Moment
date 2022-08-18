@@ -2,12 +2,14 @@
     The class of the bot, containing necessary information for creating the bot
 """
 
-from model.plugin import Plugin
+from core.plugin import Plugin
 
 class Bot:
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, platform: str, env: str):
         self.name = name
+        self.platform = platform
+        self.env = env
         self.installed_plugins = []
         self.installed_plugins_name = []
 

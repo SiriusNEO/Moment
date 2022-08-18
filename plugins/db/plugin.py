@@ -2,10 +2,11 @@ from plugins.db.plugin_config import *
 from plugins.db.basic_db import DataBase
 from plugins.db.db_cmd_parser import database_cmd_parse
 from plugins.db.db_event import *
+from plugins.db.plugin_doc import PLUGIN_DOC
 
-from model.error import Error
+from core.error import Error
 
-from model.plugin import *
+from core.plugin import *
 
 class Database_Plugin(Plugin):
 
@@ -13,7 +14,7 @@ class Database_Plugin(Plugin):
         super().__init__(
                 requirements = [], 
                 info = "DataBase: 强大的信息数据库.",
-                doc = "使用命令格式: [索引] / [索引] 修改"
+                doc = PLUGIN_DOC
             )
 
 
@@ -34,7 +35,7 @@ class Database_Plugin(Plugin):
         if hasattr(event, 'indices'):
             for index in event.indices:
                 if index.tag not in self.database.tag_type:
-                    return Error("标签不存在: {}".format(modify.tag))
+                    return Error("标签不存在: {}".format(index.tag))
                 error = self._val_resolve(index, event)
                 if error != None:
                     return error
@@ -46,10 +47,9 @@ class Database_Plugin(Plugin):
                 error = self._val_resolve(modify, event)
                 if error != None:
                     return error
-
-        if type(event) == QueryEvent:
+        # 0 query
+        if isinstance(event, QueryEvent):
             result, result_id = self.database.query(event.indices)
-
             if type(result) == Error:
                 return result
             else:
@@ -66,33 +66,28 @@ class Database_Plugin(Plugin):
                         reply.text += self._display_line(result[i], result_id[i])
                         if i < len(result)-1:
                             reply.text += "\n"
-
-        elif type(event) == ModifyEvent:
-            
+        # 1 modify
+        elif isinstance(event, ModifyEvent):
             result = self.database.modify(event.indices, event.modifies, event.word)
-
             if type(result) == Error:
                 return result
             else:
                 reply.text = "修改成功!"
-
-        elif type(event) == NewEvent:
-            
+        # 2 new
+        elif isinstance(event, NewEvent):
             result = self.database.new(event.modifies)
-
             if type(result) == Error:
                 return result
             else:
                 reply.text = "添加成功!"
-
+        # 3 commit
+        elif isinstance(event, CommitEvent):
+            self.database.write_back()
+            reply.text = "写回成功!"
         else:
-            return Error("非数据库事件被分派到给数据库中心处理")
+            return Error("未知数据库事件类型")
 
-        self.database.write_back()
         return reply
-
-    async def plugin_task() -> Message:
-        pass
 
     """
         info_cut: 过长信息截断，用 ... 代替

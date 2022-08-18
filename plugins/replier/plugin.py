@@ -1,10 +1,12 @@
 from plugins.db.basic_db import DataBase
 from plugins.replier.plugin_config import *
+from plugins.replier.plugin_doc import PLUGIN_DOC
 from plugins.db.db_event import TagPair
 
-from model.plugin import *
+from core.plugin import *
 
 import random
+
 
 class Replier_Plugin(Plugin):
 
@@ -12,7 +14,7 @@ class Replier_Plugin(Plugin):
         super().__init__(
                 requirements = ["Database_Plugin"], 
                 info = "Replier: 键值对回复器",
-                doc = "给指定信息设定值 key (关键词回复), full (完全匹配回复), 回复内容为 cm"
+                doc = PLUGIN_DOC
             )
 
     def setup(self, database: DataBase):

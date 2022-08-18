@@ -1,4 +1,4 @@
-from model.message import Message
+from core.message import Message
 from plugins.db.db_event import *
 from plugins.db.plugin_config import *
 
@@ -147,6 +147,9 @@ def one_database_parse(text: str, left: str, right: str):
 """
 def database_cmd_parse(raw: Message):
     if raw.text != None:
+        if raw.text == COMMIT_COMMAND:
+            return CommitEvent()
+
         cm_event = one_database_parse(raw.text, INDEX_SYMBOL[0], INDEX_SYMBOL[1])
 
         if cm_event != None:

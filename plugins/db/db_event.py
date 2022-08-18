@@ -1,4 +1,4 @@
-from model.message import Message
+from core.message import Message
 
 class TagPair:
 
@@ -82,3 +82,8 @@ class ModifyEvent(BaseDatabaseEvent):
         print("modifies list: ", self.modifies)
         print("word: ", self.word)
 
+"""
+    Commit Event
+"""
+class CommitEvent(BaseDatabaseEvent):
+    ...

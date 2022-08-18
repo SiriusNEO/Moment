@@ -1,6 +1,6 @@
 # Command Part
 
-PANIC = "panic"
+COMMIT_COMMAND = "commit"
 
 SPLIT = " "
 

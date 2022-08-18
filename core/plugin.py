@@ -1,8 +1,8 @@
 """
     The basic class of all plugins
 """
-from model.message import Message
-from model.error import Error
+from core.message import Message
+from core.error import Error
 from typing import Union
 
 class Plugin:

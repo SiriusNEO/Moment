@@ -1,11 +1,14 @@
 import json
 import os
 
-from model.error import Error
-from model.message import *
+from core.error import Error
+from core.message import Message
 from plugins.db.db_event import TagPair
 
 from plugins.db.plugin_config import WORD_DEL, WORD_CLR, SHADOW_CODE, ID
+
+# the file structure depends on the image server
+from core.image import *
 
 class DataBase:
 
@@ -46,48 +49,31 @@ class DataBase:
             if index.tag != ID and index.tag not in line:
                 continue
 
-            # 如果是多关键词, 匹配一个即可
+            match_flag = None
+
+            # 如果是多关键词, 需要匹配所有词
             if self.tag_type[index.tag] == list:
-                
-                # 完全匹配
-                if index.typ == 0:
-                    # 成功
-                    print("来点大家想看的", index.val == line[index.tag][0])
-                    index.val.display()
-                    line[index.tag][0].display()
+                match_flag = True
+                for content in line[index.tag]:    
+                    # 完全匹配
+                    if index.typ == 0:
+                        if not content == index.val:
+                            match_flag = False
+                            break
 
-                    if index.val in line[index.tag]:
-                        if is_first_query:
-                            ret.append(line)
-                            continue
-                    # 失败
-                    else:
-                        if not is_first_query:
-                            ret.remove(line)
-                            continue
-
-                # 局部匹配
-                elif index.typ == 1:
-                    for content in line[index.tag]:
+                    # 局部匹配
+                    elif index.typ == 1:
                         if type(content) != Message:
                             return Error("类型错误，对非信息关键词执行模糊匹配")
                         else: 
-                            # 匹配成功
-                            if content.text is not None and index.val.text != "" and content.text.find(index.val.text) != -1:
-                                if is_first_query:
-                                    ret.append(line)
-                                    continue
-                            # 失败
-                            else:
-                                if not is_first_query:
-                                    ret.remove(line)
-                                    continue
-                else:
-                    return Error("未知的查询类型")
+                            if not (content.text is not None and content.text != "" and index.val.text.find(content.text) != -1):
+                                match_flag = False
+                                break    
+                    else:
+                        return Error("未知的查询类型")
 
             # 单关键词, 直接判断本身
             else:
-                
                 # 单关键词需要检查类型
                 if type(index.val) != self.tag_type[index.tag]:
                     return Error("查询类型不匹配")
@@ -96,20 +82,13 @@ class DataBase:
                 if index.typ == 0:
                     # 特判 id
                     if index.tag == ID:
-                        if self.storage.index(line) == index.val:
-                            if is_first_query:
-                                ret.append(line)
-                                continue
+                        match_flag = (self.storage.index(line) == index.val)
                     # 成功
                     elif index.val == line[index.tag]:
-                        if is_first_query:
-                            ret.append(line)
-                            continue
+                        match_flag = True
                     # 失败
                     else:
-                        if not is_first_query:
-                            ret.remove(line)
-                            continue
+                        match_flag = False
 
                 # 局部匹配
                 elif index.typ == 1:
@@ -117,15 +96,11 @@ class DataBase:
                         return Error("类型错误，对非信息类关键词执行模糊匹配")
                     else:
                         # 成功
-                        if line[index.tag].text != None and index.val.text != "" and line[index.tag].text.find(index.val.text) != -1:
-                            if is_first_query:
-                                ret.append(line)
-                                continue
+                        if line[index.tag].text != None and line[index.tag].text != "" and index.val.text.find(line[index.tag].text) != -1:
+                            match_flag = True
                         # 失败
                         else:
-                            if not is_first_query:
-                                ret.remove(line)
-                                continue
+                            match_flag = False
                 
                 elif index.typ == 2 or index.typ == 3:
                     if index.tag != ID and (type(line[index.tag]) != int or type(line[index.tag]) != float):
@@ -137,14 +112,18 @@ class DataBase:
                             line_data = line[index.tag]
                         # 成功
                         if (index.typ == 2 and line_data > index.val) or (index.typ == 3 and line_data < index.val):
-                            if is_first_query:
-                                ret.append(line)
-                                continue
+                            match_flag = True
                         # 失败
                         else:
-                            if not is_first_query:
-                                ret.remove(line)
-                                continue
+                            match_flag = False
+
+            assert match_flag is not None
+            # 结算
+            if match_flag and is_first_query:
+                ret.append(line)
+            elif not is_first_query:
+                ret.remove(line)
+
 
     def single_modify_check(self, lines: list, modify: TagPair):
         # 检查合法性, 保证不合法不发生任何修改
@@ -207,6 +186,9 @@ class DataBase:
     def modify(self, indices: list, modifies: list, word: str):
         # id is no need
         lines, _ = self.query(indices)
+
+        if len(lines) == 0:
+            return Error("没找到目标")
 
         if type(lines) == Error:
             return lines

@@ -11,22 +11,31 @@ from graia.application.group import Group, Member
 from frontend.mirai.msg_parser import *
 from frontend.mirai.frontend_config import *
 
-from model.message import Message
-from model.error import Error
-from model.bot import Bot
+# import: core
+from core.message import Message
+from core.error import Error
+from core.bot import Bot
 
-from plugins.db.database import Database_Plugin
-from plugins.replier.replier import Replier_Plugin
+# import: plugins
+from plugins.help.plugin import Help_Plugin
+from plugins.db.plugin import Database_Plugin
+from plugins.replier.plugin import Replier_Plugin
 
 """
     Bot initialization
 """
+help_plugin = Help_Plugin()
 database_plugin = Database_Plugin()
-replier = Replier_Plugin()
+replier_plugin = Replier_Plugin()
 
-bot = Bot(name="mom")
+bot = Bot(
+        name="moment",
+        platform="Graia v4",
+        env="CentOS"
+        )
+bot.install(help_plugin, bot)
 bot.install(database_plugin)
-bot.install(replier, database_plugin.database)
+bot.install(replier_plugin, database_plugin.database)
 
 """
     Graia initialization
@@ -42,6 +51,12 @@ app = GraiaMiraiApplication(
         websocket=True  # Graia 已经可以根据所配置的消息接收的方式来保证消息接收部分的正常运作.
     )
 )
+
+"""
+    Plugin Task
+"""
+for plugin in bot.installed_plugins:
+    loop.create_task(plugin.plugin_task())
 
 """
     listen method

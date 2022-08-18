@@ -1,6 +1,5 @@
-from model.message import Message, Picture
-from frontend.mirai.local_img_server import *
-from utils.rand_tool import random_str
+from core.message import Message
+from core.image import *
 from graia.application.message.chain import MessageChain
 from graia.application import GraiaMiraiApplication
 from graia.application.message.elements.internal import Plain, Image, Quote, At, Source
@@ -24,11 +23,8 @@ async def graia2moment(app: GraiaMiraiApplication,
     if graia_chain.has(Image):
         image = graia_chain.get(Image)[0]
         
-        pic_fn = random_str()
-        pic_bytes = await download_image(image.url)
-        # pic_path = await save_image(pic_bytes, pic_fn)
-
-        message.pic = Picture(image.url, pic_bytes)
+        pic_bytes = await Image.http_to_bytes(Image(), image.url)
+        message.pic = Picture(image.url, pic_bytes = pic_bytes)
 
     if graia_chain.has(Quote):
         quote_id = graia_chain.get(Quote)[0].origin.get(Source)[0].id
@@ -54,11 +50,8 @@ async def moment2graia(message: Message):
     if message.text != None:
         chain_list.append(Plain(message.text))
     
-    # only one will work
     if message.pic is not None:
-        if message.pic.pic_path != None:
-            chain_list.append(Image.fromLocalAddress(message.pic.pic_path))
-        elif message.pic.pic_url != None:
+        if message.pic.pic_url != None:
             chain_list.append(Image.fromUnsafeAddress(message.pic.pic_url))
 
     return MessageChain.create(chain_list)
