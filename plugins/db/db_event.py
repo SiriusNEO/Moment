@@ -87,3 +87,9 @@ class ModifyEvent(BaseDatabaseEvent):
 """
 class CommitEvent(BaseDatabaseEvent):
     ...
+
+"""
+    Backup Event
+"""
+class BackupEvent(BaseDatabaseEvent):
+    ...

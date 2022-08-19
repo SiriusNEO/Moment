@@ -10,11 +10,14 @@ from plugins.db.plugin_config import WORD_DEL, WORD_CLR, SHADOW_CODE, ID
 # the file structure depends on the image server
 from core.image import *
 
-class DataBase:
+from utils.log import Log
 
-    path: str
-    storage: list
-    tag_type: dict
+class DataBase:
+    """
+        path: str
+        storage: list
+        tag_type: dict
+    """
 
     def __init__(self, path):
         self.path = path
@@ -22,18 +25,20 @@ class DataBase:
             with open(path, "r") as fp:
                 self.storage = list(json.load(fp, object_hook=decode_hook))
         else:
-            print("create database: ", path)
+            Log.info("create database: ", path)
             self.storage = list()
             with open(path, "w") as fp:
                 json.dump(self.storage, fp, cls=MessageJSONEncoder)
         
         self.tag_type = {}
         
-        print("database {0} init finish.".format(path))
-        print("storage: ", self.storage)
+        Log.info("database {0} init finish.".format(path))
     
-    def write_back(self):
-        with open(self.path, "w") as fp:
+    def write_back(self, path=None):
+        if path is None:
+            path = self.path
+        
+        with open(path, "w") as fp:
             json.dump(self.storage, fp, cls=MessageJSONEncoder)
 
 
@@ -61,14 +66,24 @@ class DataBase:
                             match_flag = False
                             break
 
-                    # 局部匹配
+                    # 局部匹配 ?
                     elif index.typ == 1:
+                        if type(content) != Message:
+                            return Error("类型错误，对非信息关键词执行模糊匹配")
+                        else: 
+                            if not (content.text is not None and index.val.text != "" and content.text.find(index.val.text) != -1):
+                                match_flag = False
+                                break   
+                     
+                    # 局部匹配 @
+                    elif index.typ == 4:
                         if type(content) != Message:
                             return Error("类型错误，对非信息关键词执行模糊匹配")
                         else: 
                             if not (content.text is not None and content.text != "" and index.val.text.find(content.text) != -1):
                                 match_flag = False
-                                break    
+                                break
+
                     else:
                         return Error("未知的查询类型")
 
@@ -90,8 +105,20 @@ class DataBase:
                     else:
                         match_flag = False
 
-                # 局部匹配
+                # 局部匹配: ?
                 elif index.typ == 1:
+                    if index.tag == ID or type(line[index.tag]) != Message:
+                        return Error("类型错误，对非信息类关键词执行模糊匹配")
+                    else:
+                        # 成功
+                        if line[index.tag].text != None and index.val.text != "" and line[index.tag].text.find(index.val.text) != -1:
+                            match_flag = True
+                        # 失败
+                        else:
+                            match_flag = False
+                
+                # 局部匹配: @
+                elif index.typ == 4:
                     if index.tag == ID or type(line[index.tag]) != Message:
                         return Error("类型错误，对非信息类关键词执行模糊匹配")
                     else:
@@ -102,6 +129,7 @@ class DataBase:
                         else:
                             match_flag = False
                 
+                # 大小匹配: > <
                 elif index.typ == 2 or index.typ == 3:
                     if index.tag != ID and (type(line[index.tag]) != int or type(line[index.tag]) != float):
                         return Error("类型错误，对非数值关键词执行大小匹配")
@@ -121,7 +149,7 @@ class DataBase:
             # 结算
             if match_flag and is_first_query:
                 ret.append(line)
-            elif not is_first_query:
+            if not match_flag and not is_first_query and line in ret:
                 ret.remove(line)
 
 
@@ -212,8 +240,7 @@ class DataBase:
                     self.storage.remove(line)
             elif word == WORD_CLR:
                 for line in lines:
-                    for tag in line:
-                        line.pop(tag)
+                    self.storage[self.storage.index(line)] = {}
         else:
             for modify in modifies:
                 self._single_modify(lines, modify)

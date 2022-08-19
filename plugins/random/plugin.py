@@ -12,8 +12,9 @@ class Random_Plugin(Plugin):
 
     def __init__(self):
         super().__init__(
+                name = "Random",
                 requirements = [], 
-                info = "Random: 随机数工具",
+                info = "随机数工具",
                 doc = PLUGIN_DOC
             )
 
@@ -81,7 +82,8 @@ class Random_Plugin(Plugin):
 语文: {}/150
 数学: {}/150
 英语: {}/150
-{}综: {}/300"""
+{}综: {}/300
+总分: {}/750"""
 
         chinese = int(random.gauss(120, 5))
         math = int(random.gauss(125, 15))
@@ -105,5 +107,5 @@ class Random_Plugin(Plugin):
             if zonghe > 299:
                 zonghe = 300
         
-        return ret.format(major, chinese, math, english, major, zonghe)
+        return ret.format(major, chinese, math, english, major, zonghe, chinese+math+english+zonghe)
     

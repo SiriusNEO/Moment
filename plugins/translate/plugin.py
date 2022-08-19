@@ -13,8 +13,9 @@ class Translate_Plugin(Plugin):
 
     def __init__(self):
         super().__init__(
+                name = "Translate",
                 requirements = [], 
-                info = "Translate: 翻译器",
+                info = "翻译器",
                 doc = PLUGIN_DOC
             )
     
@@ -27,6 +28,9 @@ class Translate_Plugin(Plugin):
     def handle_message(self, message: Message) -> Union[Error, Message]:
         assert self._setup_flag
 
+        if message.quote is None or message.quote.text is None:
+            return Error("缺少引用的内容")
+
         if message.text is not None:
             reply = Message()
 
@@ -35,9 +39,6 @@ class Translate_Plugin(Plugin):
                     return Error("未知语种: {}".format(message.text[0]), urge=self.get_name())
                 elif not message.text[2] in LANG:
                     return Error("未知语种: {}".format(message.text[2]), urge=self.get_name())
-                
-                if message.quote is None or message.quote.text is None:
-                    return Error("缺少引用的内容", urge=self.get_name())
                 
                 src_text = message.quote.text
                 src_lang = LANG_MAP[message.text[0]]

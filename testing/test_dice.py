@@ -1,7 +1,7 @@
 from plugins.random.dice import build, evaluate
 from core.error import Error
 
-expr = "("
+expr = "(1+2)*(3-4)/3+24"
 
 result = evaluate(build(expr))
 

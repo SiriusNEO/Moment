@@ -149,6 +149,9 @@ def database_cmd_parse(raw: Message):
     if raw.text != None:
         if raw.text == COMMIT_COMMAND:
             return CommitEvent()
+        
+        if raw.text == BACKUP_COMMAND:
+            return BackupEvent()
 
         cm_event = one_database_parse(raw.text, INDEX_SYMBOL[0], INDEX_SYMBOL[1])
 

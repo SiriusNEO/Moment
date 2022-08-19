@@ -5,19 +5,23 @@ from core.message import Message
 from core.error import Error
 from typing import Union
 
+import asyncio
+
 class Plugin:
 
-    def __init__(self, requirements = [], info = "", doc = ""):
+    def __init__(self, name, requirements = [], info = "", doc = ""):
+        self._name = name
         self.requirements = requirements
         self.info = info
         self.doc = doc
         self._setup_flag = False
+        self.banned = False
     
     """
         Get the plugin name (class name)
     """
     def get_name(self):
-        return self.__class__.__name__
+        return self._name
 
     """
         Things that should be done when installing this plugin to bot

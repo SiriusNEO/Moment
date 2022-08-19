@@ -1,11 +1,9 @@
-from frontend.mirai.frontend_config import IMG_PATH
+from core.core_config import *
 from core.message import Message
 
 import json
 
 from utils.rand_tool import random_str
-
-tmp_file_name = "tmp"
 
 """
     Load an image.
@@ -18,7 +16,7 @@ def load_image(path: str) -> bytes:
 """
     Save an image. Return its path.
 """
-def save_image(data: bytes, file_name=tmp_file_name) -> str:
+def save_image(data: bytes, file_name=TMP_FILENAME) -> str:
     path = IMG_PATH + file_name
     fp = open(path, "wb")
     fp.write(data)
@@ -51,11 +49,11 @@ class Picture:
 
 def parse_to_JSONable(msg: Message):
         if msg.pic is None:
-            return {"__msghead__": "", "text": msg.text, "pic_url": None, "pic_path": None}
+            return {MSGHEAD_SYMBOL: "", "text": msg.text, "pic_url": None, "pic_path": None}
         
         pic_fn = random_str()
         pic_path = save_image(msg.pic.pic_bytes, pic_fn)
-        return {"__msghead__": "", "text": msg.text, "pic_url": msg.pic.pic_url, "pic_path": pic_path}
+        return {MSGHEAD_SYMBOL: "", "text": msg.text, "pic_url": msg.pic.pic_url, "pic_path": pic_path}
 
 
 def parse_from_JSONable(JSONable):
@@ -79,6 +77,6 @@ class MessageJSONEncoder(json.JSONEncoder):
 
 def decode_hook(obj):
     if isinstance(obj, dict):
-        if "__msghead__" in obj:
+        if MSGHEAD_SYMBOL in obj:
             return parse_from_JSONable(obj)
         return obj

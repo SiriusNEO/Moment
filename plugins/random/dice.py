@@ -5,6 +5,8 @@ from typing import Union
 from core.error import Error
 import random
 
+from plugins.random.plugin_config import DICE_N_THRESHOLD, DICE_V_THRESHOLD
+
 class DiceExpr:
     ...
 
@@ -50,18 +52,25 @@ def build(text: str) -> Union[DiceExpr, Error]:
     if text == "":
         return Error("骰子表达式有误, 树构建失败", urge="Random_Plugin")
 
-    # ()
-    left_bra = text.find("(")
-    right_bra = text.rfind(")")
-    # 有一个找不到
-    if left_bra * right_bra < 0 or left_bra > right_bra:
-        return Error("骰子表达式括号不匹配!", urge="Random_Plugin")
+    bracket_list = []
+    cnt = 0
 
-    if left_bra != -1 and right_bra != -1:
-        encoded_text = text[:left_bra+1] + "?"*(right_bra - left_bra - 1) + text[right_bra:]
-    else:
-        encoded_text = text
-
+    for i in range(len(text)):
+        if text[i] == "(":
+            if cnt == 0:
+                bracket_list.append([])
+                bracket_list[len(bracket_list)-1].append(i)
+            cnt += 1
+        elif text[i] == ")":
+            cnt -= 1
+            if cnt == 0:
+                bracket_list[len(bracket_list)-1].append(i)
+    
+    encoded_text = text
+    if len(bracket_list) > 0:
+        for bra in bracket_list:
+            encoded_text = encoded_text[:bra[0]+1] + "?"*(bra[1] - bra[0] - 1) + encoded_text[bra[1]:]
+    
     # 按照优先级. 二元运算符
     # 0: + - 
     # 1: * / 
@@ -88,9 +97,10 @@ def build(text: str) -> Union[DiceExpr, Error]:
             return ExprWithOp(text[op_pos], lhs, rhs)
 
     # bracket
-    if left_bra != -1 and right_bra != -1:
-        assert left_bra == 0
-        assert right_bra == len(text)-1
+    if len(bracket_list) > 0:
+        assert len(bracket_list) == 1
+        assert bracket_list[0][0] == 0
+        assert bracket_list[0][1] == len(text)-1
         return build(text[1:len(text)-1])
     
     # prim
@@ -113,22 +123,33 @@ def evaluate(expr: Union[DiceExpr, Error]) -> Union[int, Error]:
     if isinstance(expr, Error):
         return expr
     elif isinstance(expr, Integer):
+        if expr.value > DICE_V_THRESHOLD:
+            return Error("常数太大!", urge="Random_Plugin")
         return expr.value
     elif isinstance(expr, PrimDiceExpr):
         result = 0
+        if expr.X > DICE_N_THRESHOLD:
+            return Error("骰子个数太大!", urge="Random_Plugin")
+        if expr.Y > DICE_V_THRESHOLD:
+            return Error("骰子面数太大!", urge="Random_Plugin")
         for _ in range(expr.X):
             result += random.randint(1, expr.Y)
         return result
     elif isinstance(expr, ExprWithOp):
         if expr.op == '+':
-            return evaluate(expr.lhs) + evaluate(expr.rhs)
+            result = evaluate(expr.lhs) + evaluate(expr.rhs)
         elif expr.op == '-':
-            return evaluate(expr.lhs) - evaluate(expr.rhs)
+            result = evaluate(expr.lhs) - evaluate(expr.rhs)
         elif expr.op == '*':
-            return evaluate(expr.lhs) * evaluate(expr.rhs)
+            result = evaluate(expr.lhs) * evaluate(expr.rhs)
         elif expr.op == '/':
-            return evaluate(expr.lhs) // evaluate(expr.rhs)
+            result = evaluate(expr.lhs) // evaluate(expr.rhs)
         elif expr.op == '^':
-            return evaluate(expr.lhs) ** evaluate(expr.rhs)
+            result = evaluate(expr.lhs) ** evaluate(expr.rhs)
         else:
             return Error("内部错误: 未知的op")
+
+        if result > DICE_V_THRESHOLD or result < -DICE_V_THRESHOLD:
+            return Error("数值太大!", urge="Random_Plugin")
+        
+        return result

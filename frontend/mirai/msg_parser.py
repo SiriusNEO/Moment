@@ -1,5 +1,6 @@
 from core.message import Message
 from core.image import *
+from core.core_config import LOCAL_FILE_URL
 from graia.application.message.chain import MessageChain
 from graia.application import GraiaMiraiApplication
 from graia.application.message.elements.internal import Plain, Image, Quote, At, Source
@@ -59,7 +60,9 @@ async def moment2graia(app: GraiaMiraiApplication, message: Message):
         chain_list.append(Plain(message.text))
     
     if message.pic is not None:
-        if message.pic.pic_url != None:
+        if message.pic.pic_url != None and message.pic.pic_url != LOCAL_FILE_URL:
             chain_list.append(Image.fromUnsafeAddress(message.pic.pic_url))
+        else:
+            chain_list.append(Image.fromLocalFile(message.pic.pic_path))
 
     return MessageChain.create(chain_list)

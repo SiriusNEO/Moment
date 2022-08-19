@@ -1,3 +1,3 @@
 from plugins.translate.plugin_config import *
 
-PLUGIN_DOC = "开机问候插件. 在启动时给予全群最亲切的问候."
+PLUGIN_DOC = "问候插件. 开机问候与整点报时功能."

@@ -9,8 +9,9 @@ class Touhou_Plugin(Plugin):
 
     def __init__(self):
         super().__init__(
+                name = "Touhou",
                 requirements = [], 
-                info = "Touhou: 抽车万人工具",
+                info = "抽车万人工具",
                 doc = PLUGIN_DOC
             )
 
@@ -29,7 +30,7 @@ class Touhou_Plugin(Plugin):
                 if len(role_list) == 0:
                     return Error("未知的作品名: {}".format(game_name), urge=self.get_name())
                 else:
-                    reply.text = "[Touhou Role] 作品 [" + game_name + "]："
+                    reply.text = "[Moment Touhou Role] 作品 [" + game_name + "]："
                     for role in role_list:
                         reply.text += "\n" + role
                     return reply    
@@ -41,7 +42,7 @@ class Touhou_Plugin(Plugin):
                 if len(sc_list) == 0:
                     return Error("未知的角色名: {}".format(role_name), urge=self.get_name())
                 else:
-                    reply.text = "[Touhou Spellcard] 角色 [" + role_name + "]："
+                    reply.text = "[Moment Touhou Spellcard] 角色 [" + role_name + "]："
                     for sc in sc_list:
                         reply.text += "\n" + sc
                     return reply

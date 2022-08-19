@@ -42,7 +42,10 @@ class Message:
     def msg_2_str(self):
         ret = str()
         if self.text != None:
-            ret += self.text
+            if len(self.text) > 8:
+                ret += self.text[:8] + "..."
+            else:
+                ret += self.text
         
         if self.pic != None:
             if len(ret) > 0:

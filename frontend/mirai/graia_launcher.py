@@ -24,6 +24,12 @@ from plugins.random.plugin import Random_Plugin
 from plugins.touhou.plugin import Touhou_Plugin
 from plugins.translate.plugin import Translate_Plugin
 from plugins.hello.plugin import Hello_Plugin
+from plugins.alarm.plugin import Alarm_Plugin
+from plugins.word.plugin import Word_Plugin
+from plugins.autotalk.plugin import Autotalk_Plugin
+from plugins.pixiv.plugin import Pixiv_Plugin
+from plugins.ps.plugin import PS_Plugin
+from plugins.judge.plugin import Judge_Plugin
 
 # import: log
 from utils.log import Log
@@ -33,6 +39,8 @@ from utils.log import Log
 """
 bot = Bot(
             name="moment",
+            account=ACCOUNT,
+            roots=ROOT_ACCOUNTS,
             platform="Graia v4",
             env="CentOS"
         )
@@ -44,14 +52,26 @@ random_plugin = Random_Plugin()
 touhou_plugin = Touhou_Plugin()
 translate_plugin = Translate_Plugin()
 hello_plugin = Hello_Plugin()
+alarm_plugin = Alarm_Plugin()
+word_plugin = Word_Plugin()
+autotalk_plugin = Autotalk_Plugin()
+pixiv_plugin = Pixiv_Plugin()
+ps_plugin = PS_Plugin()
+judge_plugin = Judge_Plugin()
 
 bot.install(help_plugin, bot)
 bot.install(database_plugin)
-bot.install(replier_plugin, database_plugin.database)
 bot.install(random_plugin)
 bot.install(touhou_plugin)
 bot.install(translate_plugin)
 bot.install(hello_plugin)
+bot.install(alarm_plugin)
+bot.install(word_plugin)
+bot.install(autotalk_plugin)
+bot.install(pixiv_plugin)
+bot.install(ps_plugin)
+bot.install(judge_plugin)
+bot.install(replier_plugin, database_plugin.database)
 
 """
     Graia initialization
@@ -83,21 +103,10 @@ async def group_message_listener(app: GraiaMiraiApplication,
         message.display()
 
         # handle message
-
-        for plugin in bot.installed_plugins:
-            reply = plugin.handle_message(message)
-            if isinstance(reply, Message):
-                await send_group_message(reply)
-                break
-            else:
-                assert isinstance(reply, Error)
-                if reply.urge is not None:
-                    reply_error = Message()
-                    reply_error.text = "{}: {}".format(reply.urge, reply.what)
-                    await send_group_message(reply_error)
-                    break
-                else:
-                    Log.info("<{}>: ".format(plugin.get_name()), reply.what)
+        reply = bot.handle_message(message)
+        if reply is not None:
+            await send_group_message(reply)
+        
 
 """
     send method

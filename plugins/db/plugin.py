@@ -12,8 +12,9 @@ class Database_Plugin(Plugin):
 
     def __init__(self):
         super().__init__(
+                name = "Database",
                 requirements = [], 
-                info = "DataBase: 强大的信息数据库.",
+                info = "强大的信息数据库.",
                 doc = PLUGIN_DOC
             )
 
@@ -26,6 +27,10 @@ class Database_Plugin(Plugin):
 
     def handle_message(self, message: Message) -> Union[Error, Message]:
         assert self._setup_flag
+
+        if message.text == COMMIT_COMMAND or message.text == BACKUP_COMMAND:
+            if message.sender not in self.roots:
+                return Error("权限不够", urge=self.get_name())
 
         event = database_cmd_parse(message)
 
@@ -60,8 +65,10 @@ class Database_Plugin(Plugin):
                     reply.text = "很遗憾, 查询结果为空"
                 elif len(result) > QUERY_DISPLAY_THRESHOLD:
                     reply.text = "共有 {0} 条数据, 仅显示最新 {1} 条:\n".format(len(result), QUERY_DISPLAY_THRESHOLD)
-                    for i in range(len(result)-QUERY_ASSIGN, len(result)):
-                        reply.text += result[i] + "\n"
+                    for i in range(len(result)-QUERY_DISPLAY_THRESHOLD, len(result)):
+                        reply.text += self._display_line(result[i], result_id[i])
+                        if i < len(result)-1:
+                            reply.text += "\n"
                 else:
                     reply.text = "共有 {0} 条数据:\n".format(len(result))
                     for i in range(len(result)):
@@ -87,6 +94,10 @@ class Database_Plugin(Plugin):
         elif isinstance(event, CommitEvent):
             self.database.write_back()
             reply.text = "写回成功!"
+        # 4 backup
+        elif isinstance(event, BackupEvent):
+            self.database.write_back(BACKUP_PATH)
+            reply.text = "备份成功!"
         else:
             return Error("未知数据库事件类型")
 
@@ -106,6 +117,10 @@ class Database_Plugin(Plugin):
     """
     def _display_line(self, line: dict, id: int):
         ret = "{0}: ".format(id)
+        if not line:
+            # 空数据条目
+            return ret + "空数据"
+
         for tag in line:
             if tag == SHADOW_CODE:
                 continue
@@ -131,7 +146,7 @@ class Database_Plugin(Plugin):
         真实值只能是 Message, int, float 三种类型之一
     """
     def _val_resolve(self, tag_pair: TagPair, event: BaseDatabaseEvent):
-        if self.database.tag_type[tag_pair.tag] == list or self.database.tag_type[tag_pair.tag] == str:
+        if self.database.tag_type[tag_pair.tag] == list:
             if tag_pair.val == THIS:
                 if event.quote is None:
                     return Error("无引用的内容！")

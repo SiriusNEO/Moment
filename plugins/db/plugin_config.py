@@ -1,12 +1,13 @@
 # Command Part
 
-COMMIT_COMMAND = "commit"
+COMMIT_COMMAND = "momcommit"
+BACKUP_COMMAND = "mombackup"
 
 SPLIT = " "
 
 INDEX_SYMBOL = ["[", "]"]
 
-QUERY_ASSIGN = ["=", "?", ">", "<"] 
+QUERY_ASSIGN = ["=", "?", ">", "<", "@"] 
 MODIFY_ASSIGN = ["=", "+", "-"]
 
 WORD_DEL = "del"
@@ -24,6 +25,7 @@ TAG_ID = "id"
 #  userdb.json
 
 CM_PATH = "local/cmdb.json"
+BACKUP_PATH = "local/cmdb_backup.json"
 
 QUERY_DISPLAY_THRESHOLD = 10
 
