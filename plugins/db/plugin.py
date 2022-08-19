@@ -62,6 +62,8 @@ class Database_Plugin(Plugin):
                 return Error(result.what, urge=self.get_name())
             elif event.target_tag is not None:
                 ret = []
+                if len(result) == 0:
+                    return Message("很遗憾, 查询结果为空")
                 if len(result) > SEND_THRESHOLD:
                     ret.append(Message("元素太多了噢, 只发前{}条噢".format(SEND_THRESHOLD)))
                     send_len = SEND_THRESHOLD
