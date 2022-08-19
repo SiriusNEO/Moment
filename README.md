@@ -5,7 +5,7 @@
 
 > Capture every beautiful MOMENT in life
 
-Moment 是一个与框架低耦合的、多功能的多平台聊天机器人。
+Moment 是一个多功能多平台群聊机器人. 它轻而强大.
 
 </div>
 
