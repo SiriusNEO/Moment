@@ -12,7 +12,7 @@ from frontend.mirai.frontend_config import WORKING_GROUP
 """
 async def graia2moment(app: GraiaMiraiApplication,
                        graia_chain: MessageChain,
-                       sender: int):
+                       sender: int) -> Message:
     
     message = Message()
 
