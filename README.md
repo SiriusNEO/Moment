@@ -1,99 +1,77 @@
 # Moment
 
-新一代便携式群聊气氛机器人。
+<div align="center">
+<img src="logo/big_logo.png" width="300px">
+
+> Capture every beautiful MOMENT in life
+
+Moment 是一个与框架低耦合的、多功能的多平台聊天机器人。
+
+</div>
 
 
 
-## Spec
+## 特点
 
-### 可移植
+- 轻量易部署。Moment 在开发过程中努力做到将依赖降到最低。如果你不使用一些插件，你只需要安装一个机器人框架库即可启动！
 
-机器人核心与框架部分分离，接口处使用一个 adapter 对接。
+- 与框架低耦合。Moment 的设计理念就是为了能够方便对接各个聊天平台，因此它在设计上将框架（被 FrontEnd，也即前端部分处理）功能（统一称作 Plugin）分离。迁移平台时，只需要写好对应的 FrontEnd 即可轻松对接。
 
-可以方便更换框架。
+  >  为了与框架独立开来，Moment 自己有一套关于聊天消息（Message）和聊天图片（Picture）的设计。前端部分即负责处理好框架的消息与 Moment 的消息类型的互相转换。
 
-### 功能简单
+- 优雅的插件式功能管理设计。对于每个功能，Moment 将其抽象为一个插件（Plugin）并统一进行管理，期间支持简单的依赖分析等。插件的抽象简洁明了，便于进行进一步功能的拓展。
 
-机器人发消息只会有两种情况：
 
-- 消息触发（Msg）
-  - 管理级命令
-  - 用户级命令
-  - key / full
-  - 回复 bot
-- 主动触发（Async）
-  - 开机触发
-  - 时间触发
-  - 随机臊皮
 
-### 轻小的数据库
+## 部署 Moment
 
-##### 信息数据库
+- Step 1：配置好前端。一般的框架都会有成熟的配置教程。
+- Step 2：将前端部分的配置文件（`frontend_config.py`）中相关信息改成自己机器人账户的信息。
+- Step 3：启动。其它部分的配置留作默认就好。（有能力者当然可以改动）
 
-```
-(int)  (msg)   (msg)   (msg)   (str)   (str)
- id    info    key     full    time    tag
-```
 
-##### 用户数据库
+
+## Plugins
+
+目前 Moment 拥有 13 个插件，即 13 个不同的功能。在使用时可以用命令
 
 ```
-(int)  (str)  (msg)  (int)  (int)
-qq     name   prof   priv   coin
+help
 ```
 
-### 命令
+来查看所有插件以及其运行情况。
 
-##### 管理级命令
+插件功能简述如下：
 
-- `panic`
+- Help: 帮助文档与插件管理. 获取每个插件的帮助文档以及随时禁用/解禁他们。
+- Database: 强大的信息数据库. 储存聊天消息以备以后使用.
+- Random: 随机数工具. 各种和随机有关的小工具.
+- Touhou: 抽车万人工具. 根据 thbwiki 的资料随机返回东方 Project 的角色、符卡。
+- Translate: 翻译器. 使用 googletrans 库进行翻译.
+- Hello: 开机问候与报时.
+- Alarm: 闹钟插件. 设置闹钟，到时间提醒. (依赖 Database 插件)
+- Word: 背单词插件. 随机从单词表中抽出单词并发送.
+- Autotalk: 全自动发病. 每个随机的一小段时间自发发送消息. (依赖 Database 插件)
+- Pixiv: P站图片搬运.
+- PS: 云图片处理插件. 基于 Pillow 的简单图片处理.
+- Judge: 锐评插件. 开启时对图片作随机回复. (依赖 Database 插件)
+- Replier: 键值对回复器. 根据数据库中的 key/full 是否触发来发出对应回复。 (依赖 Database 插件)
 
-  强行令此机器人停止一切响应
 
-- `study`
 
-  此机器人开始收集群聊数据，培养数据库。
+## Thanks
 
-  `study`  得到的数据，`tag` 会被打上
+感谢这些项目，没有它们就没有 Moment。
 
-##### 信息数据库核心命令
+- [mirai](https://github.com/mamoe/mirai) 高效率 QQ 机器人支持库
+- [GraiaApplication](https://github.com/GraiaProject/Application)  基于 mirai-api-http 的 Python 框架
+- [ABot-Graia](https://github.com/djkcyl/ABot-Graia)  借用了 Pixiv 的 api 
 
-- 指定/查询：
 
-`[id]`
 
-如果想依赖其它关键字进行查询，请使用
+## LICENSE
 
-`[info=xxx] `
+本项目采用 AGPL-3.0 license.
 
-- 如果要修改，请使用
 
-`[id] info=xxx` 
 
-这样修改。（注意，等号后面都算内容，因此多个条目修改请多次进行）
-
-对于富文本信息，可以直接“回复”某个内容，然后
-
-`[id] info`  来更新
-
-- 如果需要删除：
-
-`[id] del`
-
-##### 用户数据库核心命令
-
-- 查询
-
-信息数据库中的方括号换成尖括号即可。
-
-- 修改
-
-对于用户数据库，低权限用户不可以指定对象，只能修改自己的内容。
-
-直接 `name=`
-
-对于管理员，使用
-
-`<qq> name=`
-
-进行修改。
