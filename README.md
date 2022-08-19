@@ -2,14 +2,18 @@
 
 <div align="center">
 <img src="logo/big_logo.png" width="300px">
+![](https://img.shields.io/badge/python-3.6+-blue?style=for-the-badge&logo=python) ![](https://img.shields.io/badge/version-0.1dev-orange?style=for-the-badge&logo=dev.to)
+
 
 > Capture every beautiful MOMENT in life
 
-Moment 是一个多功能多平台群聊机器人. 它轻而强大.
+Moment 是一个与框架低耦合的、多功能的多平台聊天机器人。
 
 </div>
 
+## 注意
 
+该项目仍在开发中，功能与 api 可能会发生变动且可能存在一些测试未发现的 bug。
 
 ## 特点
 
