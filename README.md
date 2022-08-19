@@ -2,6 +2,7 @@
 
 <div align="center">
 <img src="logo/big_logo.png" width="300px">
+
 ![](https://img.shields.io/badge/python-3.6+-blue?style=for-the-badge&logo=python) ![](https://img.shields.io/badge/version-0.1dev-orange?style=for-the-badge&logo=dev.to)
 
 
