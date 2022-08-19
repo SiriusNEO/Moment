@@ -20,7 +20,9 @@ while True:
     for plugin in installed_plugins:
         reply = plugin.handle_message(test_msg)
 
-        if type(reply) == Error:
+        if isinstance(reply, Error):
             print("error: ", reply.what)
+        elif isinstance(reply, list):
+            print("list: ", reply)
         else:
             reply.display()

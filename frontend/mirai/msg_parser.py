@@ -46,9 +46,8 @@ async def graia2moment(app: GraiaMiraiApplication,
 """
     moment message to graia message
 """
-async def moment2graia(app: GraiaMiraiApplication, message: Message):
-
-    chain_list = list()
+async def moment2graia(app: GraiaMiraiApplication, message: Message) -> MessageChain:    
+    chain_list = []
 
     if message.at is not None:
         # At fails in this version

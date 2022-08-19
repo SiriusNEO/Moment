@@ -41,6 +41,7 @@ class Message:
     
     def msg_2_str(self):
         ret = str()
+
         if self.text != None:
             if len(self.text) > 8:
                 ret += self.text[:8] + "..."
@@ -61,7 +62,10 @@ class Message:
             if len(ret) > 0:
                 ret += "|"
             ret += "@"
-            
+        
+        if ret == "":
+            return "空"
+
         return ret
     
     def display(self):

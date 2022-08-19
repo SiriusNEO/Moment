@@ -23,7 +23,7 @@ class Pixiv_Plugin(Plugin):
         self.task_cnt = 0
         super().setup()
 
-    def handle_message(self, message: Message) -> Union[Error, Message]:
+    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text is not None:

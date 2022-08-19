@@ -2,7 +2,11 @@ from core.message import Message
 from plugins.db.db_event import *
 from plugins.db.plugin_config import *
 
+import re
 
+"""
+    在字符串中匹配 assign_op
+"""
 def assign_find(text: str, assign_op: list):
     for ind in range(len(assign_op)):
         pos = text.find(assign_op[ind])
@@ -10,7 +14,10 @@ def assign_find(text: str, assign_op: list):
             return pos, ind
     return -1, None
 
-
+"""
+    处理下标括号
+    返回括号里的和括号外的内容, 均经过 strip
+"""
 def bracket_parse(text: str, left: str, right: str):
     text = text.strip(' ')
 
@@ -25,7 +32,9 @@ def bracket_parse(text: str, left: str, right: str):
 
     return None
 
-
+"""
+    处理 tag_name assign_op tag_value 这种形式的串
+"""
 def assign_parse(text: str, assign_op: list):
     ret = list()
     
@@ -50,7 +59,9 @@ def assign_parse(text: str, assign_op: list):
     
     return ret
 
-
+"""
+    语法糖: [id=1] 相当于 [1]
+"""
 def index_parse(text: str):
     if text == "":
         return []
@@ -60,7 +71,9 @@ def index_parse(text: str):
     
     return None
 
-
+"""
+    特判两种 modify word
+"""
 def modify_word_parse(text: str):
     if text == WORD_DEL:
         return WORD_DEL
@@ -69,13 +82,25 @@ def modify_word_parse(text: str):
     
     return None
 
-# [id] a = b
-# ret: id, left_assign, right_assign
-def one_database_parse(text: str, left: str, right: str):
+"""
+    .key 判断, 需要括号外的半截字符粗
+"""
+def with_tag_parse(text: str):
+    if len(text) == 0 or text[0] != MEMBER_SYMBOL:
+        return None
+    text_split = text.split(" ")
+    return text_split[0][1:]
+
+
+"""
+    [id] a=b
+    return the event
+"""
+def get_event(text: str):
     ret = None
 
     # two parts
-    bracket_raw = bracket_parse(text, left, right)
+    bracket_raw = bracket_parse(text, INDEX_SYMBOL[0], INDEX_SYMBOL[1])
 
     if bracket_raw == None:
         if text == "":
@@ -100,13 +125,20 @@ def one_database_parse(text: str, left: str, right: str):
     left_assign = assign_parse(bracket_raw[0], QUERY_ASSIGN)
     left_other = index_parse(bracket_raw[0])
 
-    right_assign = assign_parse(bracket_raw[1], MODIFY_ASSIGN)
-    right_word = modify_word_parse(bracket_raw[1])
+    target_tag = with_tag_parse(bracket_raw[1])
+    if target_tag is not None:
+        remain_right = bracket_raw[1].replace(MEMBER_SYMBOL + target_tag, "").strip(" ")
+    else:
+        remain_right = bracket_raw[1].strip(" ")
+
+    right_assign = assign_parse(remain_right, MODIFY_ASSIGN)
+    right_word = modify_word_parse(remain_right)
 
     # modify
-    if (left_other != None or left_assign != None) and (right_assign != None or right_word != None) and bracket_raw[1] != "":
+    if (left_other != None or left_assign != None) and (right_assign != None or right_word != None) and remain_right != "":
         ret = ModifyEvent()
-        word = modify_word_parse(bracket_raw[1])
+        ret.target_tag = target_tag
+        word = modify_word_parse(remain_right)
         
         if word != None:
             ret.word = word
@@ -126,6 +158,7 @@ def one_database_parse(text: str, left: str, right: str):
     # query
     elif left_other != None or left_assign != None:
         ret = QueryEvent()
+        ret.target_tag = target_tag
 
         if left_other != None:
             for assign in left_other:
@@ -152,11 +185,21 @@ def database_cmd_parse(raw: Message):
         
         if raw.text == BACKUP_COMMAND:
             return BackupEvent()
+        
+        index_match = re.match(INDEX_REGEX, raw.text)
+        modify_match = re.match(MODIFY_REGEX, raw.text)
 
-        cm_event = one_database_parse(raw.text, INDEX_SYMBOL[0], INDEX_SYMBOL[1])
+        if index_match or modify_match:
+            if index_match:
+                modify_body = raw.text[index_match.span()[1]:].strip()
+                if modify_body != "" and not re.match(MODIFY_REGEX, modify_body):
+                    return None
 
-        if cm_event != None:
-            cm_event.quote = raw.quote
-            return cm_event
+            cm_event = get_event(raw.text)
+            # cm_event.tell()
+
+            if cm_event != None:
+                cm_event.quote = raw.quote
+                return cm_event
 
     return None

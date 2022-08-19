@@ -7,7 +7,6 @@ from core.plugin import *
 
 from plugins.db.plugin_config import *
 
-import random
 import time
 
 class Replier_Plugin(Plugin):
@@ -28,7 +27,7 @@ class Replier_Plugin(Plugin):
         self.next_available_time = time.time()
         super().setup()
 
-    def handle_message(self, message: Message) -> Union[Error, Message]:
+    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         reply = Message()
@@ -86,14 +85,14 @@ class Replier_Plugin(Plugin):
                 if TAG_CM in ret_line:
                     assert type(ret_line[TAG_CM]) == list
                     self.next_available_time = time.time() + self._get_next_period()
-                    return random.choice(ret_line[TAG_CM])
+                    return ret_line[TAG_CM]
 
         if not isinstance(full_ret, Error) and len(full_ret) > 0:
             for ret_line in full_ret:
                 if TAG_CM in ret_line:
                     assert type(ret_line[TAG_CM]) == list
                     self.next_available_time = time.time() + self._get_next_period()
-                    return random.choice(ret_line[TAG_CM])
+                    return ret_line[TAG_CM]
         
         return Error("没有满足条件的回复")
 

@@ -6,7 +6,7 @@ from core.plugin import Plugin
 from core.message import Message
 from core.error import Error
 from utils.log import Log
-from typing import Optional
+from typing import Optional, List
 
 class Bot:
 
@@ -22,6 +22,15 @@ class Bot:
         self.name_2_plugin = {}
 
         self._ban_list = []
+        self._send_method = None
+
+    
+    def register_send_method(self, send_method):
+        if not callable(send_method):
+            raise Exception("register a not callable send_method")
+        Log.info("Method {} has been registered. It must be async.".format(send_method.__name__))
+        self._send_method = send_method
+
 
     def install(self, plugin: Plugin, *arg):
         plugin_name = plugin.get_name()
@@ -38,21 +47,24 @@ class Bot:
         self.name_2_plugin[plugin_name] = plugin
 
 
-    def handle_message(self, message: Message) -> Optional[Message]:
+    async def handle_message(self, message: Message):
         for plugin in self.installed_plugins:
             if plugin in self._ban_list:
                 Log.info("{}: banned".format(plugin.get_name()))
                 continue
 
             reply = plugin.handle_message(message)
-            if isinstance(reply, Message):
-                return reply
+            
+            if isinstance(reply, Message) or isinstance(reply, list):
+                await self._send_method(reply)
+                return
             else:
                 assert isinstance(reply, Error)
                 if reply.urge is not None:
                     reply_error = Message()
                     reply_error.text = "{}: {}".format(reply.urge, reply.what)
-                    return reply_error
+                    await self._send_method(reply_error)
+                    return
                 else:
                     Log.info("<{}>: ".format(plugin.get_name()), reply.what)     
 

@@ -25,7 +25,7 @@ class Translate_Plugin(Plugin):
         super().setup()
     
 
-    def handle_message(self, message: Message) -> Union[Error, Message]:
+    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.quote is None or message.quote.text is None:

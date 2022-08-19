@@ -3,7 +3,7 @@
 """
 from core.message import Message
 from core.error import Error
-from typing import Union
+from typing import Union, List
 
 import asyncio
 
@@ -33,7 +33,7 @@ class Plugin:
     """
         Message 2 Reply
     """
-    def handle_message(self, message: Message) -> Union[Message, Error]:
+    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         return Error("Unimplemented")
 
     """

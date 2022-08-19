@@ -28,9 +28,9 @@ class BaseDatabaseEvent:
     New event
 """
 class NewEvent(BaseDatabaseEvent):
-
-    # a list of TagPair
-    modifies: list
+    """
+        modifies: list (a list of TagPair)
+    """
 
     def __init__(self):
         super()
@@ -44,42 +44,45 @@ class NewEvent(BaseDatabaseEvent):
     Query event
 """
 class QueryEvent(BaseDatabaseEvent):
-    
-    # a list of TagPair
-    indices: list
+    """
+        indices: list (a list of TagPair)
+        target_tag: str (get the content of the target tag)
+    """
 
     def __init__(self):
         super()
         self.indices = list()
+        self.target_tag = None
     
     def tell(self):
         print("query event")
         print("indices list: ", self.indices)
+        print("target_tag: ", self.target_tag)
 
 """
     Modify event
 """
 class ModifyEvent(BaseDatabaseEvent):
 
-    # a list of TagPair
-    indices: list
-    
-    # a list of TagPair
-    modifies: list 
-
-    # special modifty word
-    word: str
+    """
+        indices: list (a list of TagPair)
+        modifies: list (a list of TagPair)
+        target_tag: str (modify the tag. Only support word modify)
+        word: str (special modifty word)
+    """
 
     def __init__(self):
         super()
         self.indices = list()
         self.modifies = list()
+        self.target_tag = None
         self.word = None
 
     def tell(self):
         print("modifies event")
         print("indices list: ", self.indices)
         print("modifies list: ", self.modifies)
+        print("target_tag: ", self.target_tag)
         print("word: ", self.word)
 
 """

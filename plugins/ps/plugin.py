@@ -28,7 +28,7 @@ class PS_Plugin(Plugin):
             raise "ps插件缺少关键库: Pillow"
         super().setup()
 
-    def handle_message(self, message: Message) -> Union[Error, Message]:
+    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text is not None:

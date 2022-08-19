@@ -34,6 +34,9 @@ from plugins.judge.plugin import Judge_Plugin
 # import: log
 from utils.log import Log
 
+# others
+from typing import Union, List
+
 """
     Bot initialization
 """
@@ -89,6 +92,22 @@ app = GraiaMiraiApplication(
 )
 
 """
+    send method
+"""
+async def send_group_message(message: Union[Message, List[Message]]):
+    if isinstance(message, list):
+        for single_message in message:
+            await send_group_message(single_message)
+            await asyncio.sleep(SEND_WAIT)
+        return
+    
+    graia_chain = await moment2graia(app, message)
+    await app.sendGroupMessage(WORKING_GROUP, graia_chain)
+
+# register it
+bot.register_send_method(send_group_message)
+
+"""
     listen method
 """
 @bcc.receiver("GroupMessage")
@@ -96,24 +115,15 @@ async def group_message_listener(app: GraiaMiraiApplication,
                                  group: Group,
                                  member: Member,
                                  graia_chain: MessageChain):
-    
+    # only work in WORKING_GROUP
     if group.id == WORKING_GROUP:
         message = await graia2moment(app, graia_chain, member.id)
         
+        # debug
         message.display()
 
         # handle message
-        reply = bot.handle_message(message)
-        if reply is not None:
-            await send_group_message(reply)
-        
-
-"""
-    send method
-"""
-async def send_group_message(message: Message):
-    graia_chain = await moment2graia(app, message)
-    await app.sendGroupMessage(WORKING_GROUP, graia_chain)
+        await bot.handle_message(message)
 
 """
     Plugin Task

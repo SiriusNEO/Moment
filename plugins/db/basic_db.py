@@ -186,32 +186,47 @@ class DataBase:
                 line[modify.tag].remove(modify.val)
             else:
                 return Error("未知修改类型: {}".format(modify.typ))
+
     """
-        返回两个 list, 表示消息与消息的 
+        返回两个 list, 表示消息与消息的 id 号
     """
-    def query(self, indices: list):
-        ret = list()
+    def query(self, indices: list, target_tag = None):
+        lines = list()
 
         # [] 判断
         if len(indices) == 0:
-            ret = self.storage
+            lines = self.storage[:]
         else:
             for i in range(len(indices)):
-                error = self._single_query(indices[i], ret, (i == 0))
+                error = self._single_query(indices[i], lines, (i == 0))
 
                 if error != None:
                     return error, None
+
+        # 指定字段返回, 不考虑第二返回值
+        if target_tag is not None:
+            ret = []
+            for line in lines:
+                if target_tag not in line:
+                    return Error("所选目标不全都有tag: {}".format(target_tag)), None
+            
+            for line in lines:
+                if self.tag_type[target_tag] == list:
+                    ret += line[target_tag]
+                else:
+                    ret.append(line[target_tag])
+            return ret, None
             
         ret_id = list()
 
         # id 直接强行赋值, 不储存
-        for line in ret:
+        for line in lines:
             ret_id.append(self.storage.index(line))
 
-        return ret, ret_id
+        return lines, ret_id
 
 
-    def modify(self, indices: list, modifies: list, word: str):
+    def modify(self, indices: list, modifies: list, word: str, target_tag = None):
         # id is no need
         lines, _ = self.query(indices)
 
@@ -221,8 +236,11 @@ class DataBase:
         if type(lines) == Error:
             return lines
 
-        if word != None and len(modifies) >= 1:
-            return Error("修改不可同时与其它修改共存")
+        if word is not None and len(modifies) >= 1:
+            return Error("命令修改不可同时与其它修改共存")
+        
+        if target_tag is not None and len(modifies) >= 1:
+            return Error("修改指定字段时不支持命令修改")
 
         for modify in modifies:
             error = self._single_modify_check(lines, modify)
@@ -232,15 +250,33 @@ class DataBase:
 
             for modify_1 in modifies:
                 if modify != modify_1 and modify.tag == modify_1.tag:
-                    return Error("重复 tag 修改！")
+                    return Error("重复 tag 修改!")
         
-        if word != None:
-            if word == WORD_DEL:
+        if word is not None:
+            if target_tag is not None:
                 for line in lines:
-                    self.storage.remove(line)
-            elif word == WORD_CLR:
-                for line in lines:
-                    self.storage[self.storage.index(line)] = {}
+                    if target_tag not in line:
+                        return Error("所选目标不全都有tag: {}".format(target_tag))
+                if word == WORD_DEL:
+                    for line in lines:
+                        self.storage[self.storage.index(line)].pop(target_tag)
+                elif word == WORD_CLR:
+                    for line in lines:
+                        if self.tag_type[target_tag] == list:
+                            self.storage[self.storage.index(line)][target_tag] = []
+                        elif self.tag_type[target_tag] == str:
+                            self.storage[self.storage.index(line)][target_tag] = ""
+                        elif self.tag_type[target_tag] == Message():
+                            self.storage[self.storage.index(line)][target_tag] = Message()
+                        elif self.tag_type[target_tag] == int or self.tag_type[target_tag] == float:
+                            self.storage[self.storage.index(line)][target_tag] = 0
+            else:
+                if word == WORD_DEL:
+                    for line in lines:
+                        self.storage.remove(line)
+                elif word == WORD_CLR:
+                    for line in lines:
+                        self.storage[self.storage.index(line)] = {}
         else:
             for modify in modifies:
                 self._single_modify(lines, modify)
