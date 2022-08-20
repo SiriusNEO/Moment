@@ -7,6 +7,8 @@ from plugins.db.basic_db import DataBase
 from plugins.db.db_event import TagPair
 from plugins.db.plugin_config import WORD_DEL
 
+from utils.log import Log
+
 import time
 import random
 
@@ -75,6 +77,8 @@ class Alarm_Plugin(Plugin):
             
             if self.banned:
                 continue
+            
+            # Log.info("{} Working".format(self.get_name()))
             
             now_time = time.localtime(time.time())
             if now_time.tm_sec == 0:

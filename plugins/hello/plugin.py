@@ -2,6 +2,7 @@ from plugins.hello.plugin_doc import PLUGIN_DOC
 from plugins.hello.plugin_config import *
 
 from core.plugin import *
+from utils.log import Log
 
 import datetime
 
@@ -16,6 +17,8 @@ class Hello_Plugin(Plugin):
             )
     
     async def plugin_task(self, send_method):
+        await asyncio.sleep(START_WAIT)
+
         await send_method(Message(HELLO_WORD))
 
         while True:
@@ -23,6 +26,8 @@ class Hello_Plugin(Plugin):
             
             if self.banned:
                 continue
+
+            # Log.info("{} Working".format(self.get_name()))
 
             now_datetime = datetime.datetime.now()
             await Hello_Plugin._report_time(send_method, now_datetime)

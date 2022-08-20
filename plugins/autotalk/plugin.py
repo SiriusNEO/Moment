@@ -6,6 +6,8 @@ from plugins.autotalk.plugin_doc import PLUGIN_DOC
 from plugins.db.basic_db import DataBase
 from plugins.db.db_event import TagPair
 
+from utils.log import Log
+
 import random
 
 import time
@@ -53,16 +55,18 @@ class Autotalk_Plugin(Plugin):
             if self.banned:
                 continue
             
+            # Log.info("{} Working".format(self.get_name()))
+            
             if len(self.database.storage) == 0:
                 continue
             
-            now_time = time.localtime(time.time())
-            if now_time.tm_hour >= 14 and now_time.tm_hour <= 20 and now_time.tm_sec == 0:
-                happen_time = time.localtime(self.next_happen_time)
-                if now_time.tm_hour == happen_time.tm_hour and now_time.tm_min == happen_time.tm_min:
+            now_time = time.time()
+            now_time_local = time.localtime(now_time)
+            if now_time_local.tm_hour >= 12 and now_time_local.tm_hour <= 24 and now_time_local.tm_sec == 0:
+                if self.next_happen_time <= now_time:
                     await send_method(random.choice(self.database.storage)[TAG_CONTENT])
-                self.next_happen_time += Autotalk_Plugin()._get_period()
+                    self.next_happen_time += Autotalk_Plugin()._get_period()
     
     @staticmethod
     def _get_period():
-        return random.gauss(60, 20) * 60
+        return max(random.gauss(50, 10), 1)  * 60

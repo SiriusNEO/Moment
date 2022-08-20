@@ -128,9 +128,11 @@ async def group_message_listener(app: GraiaMiraiApplication,
 """
     Plugin Task
 """
+Log.info("[Moment] Starting Plugin tasks.")
+
 for plugin in bot.installed_plugins:
     loop.create_task(plugin.plugin_task(send_group_message))
 
-app.launch_blocking()
-
 Log.info("[Moment] FrontEnd Graia started.")
+
+app.launch_blocking()

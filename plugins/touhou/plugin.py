@@ -52,47 +52,48 @@ class Touhou_Plugin(Plugin):
             
             from_what = ""
             times_arg = "1"
-
-            if len(cmd_args) > 3:
-                return Error("命令参数个数不正确!")
-            elif len(cmd_args) == 3:
-                from_what = cmd_args[1]
-                times_arg = cmd_args[2]
-            elif len(cmd_args) == 2:
-                if str.isdigit(cmd_args[1]):
-                    times_arg = cmd_args[1]
-                else:
+            
+            if cmd_args[0] == RO_COMMAND or cmd_args[0] == SC_COMMAND:
+                if len(cmd_args) > 3:
+                    return Error("命令参数个数不正确!")
+                elif len(cmd_args) == 3:
                     from_what = cmd_args[1]
-            
-            if not str.isdigit(times_arg):
-                return Error("抽取次数必须是正整数!")
-            
-            times = int(times_arg)
-            if times > NUM_THRESHOLD:
-                return Error("抽太多啦...", urge=self.get_name())
-            
-            reply.text = ""
-            reply.at = message.sender 
+                    times_arg = cmd_args[2]
+                elif len(cmd_args) == 2:
+                    if str.isdigit(cmd_args[1]):
+                        times_arg = cmd_args[1]
+                    else:
+                        from_what = cmd_args[1]
+                
+                if not str.isdigit(times_arg):
+                    return Error("抽取次数必须是正整数!")
+                
+                times = int(times_arg)
+                if times > NUM_THRESHOLD:
+                    return Error("抽太多啦...", urge=self.get_name())
+                
+                reply.text = ""
+                reply.at = message.sender 
 
-            for i in range(times):
-                if i >= 1:
-                    reply.text += "\n"
-                if cmd_args[0] == RO_COMMAND:
-                    result = get_role(from_what)
-                    if result[0] == "":
-                        return Error("未知的作品名: {}".format(from_what), urge=self.get_name())
-                    reply.text += "[Touhou Role] 您抽到了："
-                    reply.text += "\n" + result[0]
-                    reply.text += "\n来自：" + result[1]
-                elif cmd_args[0] == SC_COMMAND:
-                    result = get_sc(from_what)
-                    if result[0] == "":
-                        return Error("未知的角色名: {}".format(from_what), urge=self.get_name())
-                    reply.text += "[Touhou Spellcard] 您抽到了："
-                    reply.text += "\n" + result[0]
-                    reply.text += "\n使用者：" + result[1]
-                else:
-                    return Error("未知的命令头")
-            return reply
+                for i in range(times):
+                    if i >= 1:
+                        reply.text += "\n"
+                    if cmd_args[0] == RO_COMMAND:
+                        result = get_role(from_what)
+                        if result[0] == "":
+                            return Error("未知的作品名: {}".format(from_what), urge=self.get_name())
+                        reply.text += "[Touhou Role] 您抽到了："
+                        reply.text += "\n" + result[0]
+                        reply.text += "\n来自：" + result[1]
+                    elif cmd_args[0] == SC_COMMAND:
+                        result = get_sc(from_what)
+                        if result[0] == "":
+                            return Error("未知的角色名: {}".format(from_what), urge=self.get_name())
+                        reply.text += "[Touhou Spellcard] 您抽到了："
+                        reply.text += "\n" + result[0]
+                        reply.text += "\n使用者：" + result[1]
+                    else:
+                        return Error("未知的命令头")
+                return reply
 
         return Error("命令不满足该插件")
