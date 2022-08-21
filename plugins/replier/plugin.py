@@ -84,19 +84,19 @@ class Replier_Plugin(Plugin):
             for ret_line in key_ret:
                 if TAG_CM in ret_line:
                     assert type(ret_line[TAG_CM]) == list
-                    self.next_available_time = time.time() + self._get_next_period()
+                    self.next_available_time = self._get_next()
                     return ret_line[TAG_CM]
 
         if not isinstance(full_ret, Error) and len(full_ret) > 0:
             for ret_line in full_ret:
                 if TAG_CM in ret_line:
                     assert type(ret_line[TAG_CM]) == list
-                    self.next_available_time = time.time() + self._get_next_period()
+                    self.next_available_time = self._get_next()
                     return ret_line[TAG_CM]
         
         return Error("没有满足条件的回复")
 
     
     @staticmethod
-    def _get_next_period():
-        return 10
+    def _get_next():
+        return time.time() + 10

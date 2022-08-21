@@ -26,7 +26,7 @@ class Autotalk_Plugin(Plugin):
     def setup(self):
         self.database = DataBase(AUTOTALK_DB_PATH)
         self.database.tag_type[TAG_CONTENT] = Message
-        self.next_happen_time = time.time() + Autotalk_Plugin()._get_period()
+        self.next_happen_time = Autotalk_Plugin()._get_next()
         super().setup()
 
 
@@ -62,11 +62,15 @@ class Autotalk_Plugin(Plugin):
             
             now_time = time.time()
             now_time_local = time.localtime(now_time)
+
+            if now_time_local.tm_hour == 12 and now_time_local.tm_min == 0 and now_time_local.tm_sec == 0:
+                # 启动时间, roll 一次
+                self.next_happen_time = Autotalk_Plugin()._get_next()
             if now_time_local.tm_hour >= 12 and now_time_local.tm_hour <= 24 and now_time_local.tm_sec == 0:
                 if self.next_happen_time <= now_time:
                     await send_method(random.choice(self.database.storage)[TAG_CONTENT])
-                    self.next_happen_time += Autotalk_Plugin()._get_period()
+                    self.next_happen_time = Autotalk_Plugin()._get_next()
     
     @staticmethod
-    def _get_period():
-        return max(random.gauss(50, 10), 1)  * 60
+    def _get_next():
+        return time.time() + max(int(random.gauss(40, 10)), 1)  * 60

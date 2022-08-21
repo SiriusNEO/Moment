@@ -46,6 +46,6 @@ class Hello_Plugin(Plugin):
 
         if now_datetime.hour == 7:
             # 早安
-            reply.text += "\n" + GOOD_MORNING + str(now_datetime.month) + "月" + str(now_datetime.day) + "号，" + weekdayName[now_datetime.weekday()] + "~"
+            reply.text += "\n" + GOOD_MORNING + str(now_datetime.month) + "月" + str(now_datetime.day) + "号，" + WEEKDAY_NAME[now_datetime.weekday()] + "~"
 
         await send_method(reply)
