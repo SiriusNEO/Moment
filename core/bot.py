@@ -66,7 +66,14 @@ class Bot:
                     await self._send_method(reply_error)
                     return
                 else:
-                    Log.info("<{}>: ".format(plugin.get_name()), reply.what)     
+                    Log.info("<{}>: ".format(plugin.get_name()), reply.what)
+
+
+    def create_plugin_task(self, loop):
+        Log.info("Starting Plugin tasks.")
+
+        for plugin in self.installed_plugins:
+            loop.create_task(plugin.plugin_task(self._send_method))
 
 
     def is_banned(self, plugin_name: str) -> Optional[Error]:
