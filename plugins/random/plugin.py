@@ -60,8 +60,9 @@ class Random_Plugin(Plugin):
                     return Error("命令参数个数不正确", urge=self.get_name())
                 reply.text = random.choice(cmd_args[1:])
                 return reply
-            # A不A part
+            # A不A|A没A part
             else:
+                # 虽然重复代码严重, 但等发现第三个中间词再改吧
                 bu_pos_list = find_all(message.text, "不")
                 for bu_pos in bu_pos_list:
                     for i in range(bu_pos):
@@ -72,6 +73,17 @@ class Random_Plugin(Plugin):
                             if decision == 0:
                                 reply.text += "不"
                             reply.text += message.text[i:bu_pos]
+                            return reply
+                mei_pos_list = find_all(message.text, "没")
+                for mei_pos in mei_pos_list:
+                    for i in range(mei_pos):
+                        str_len = mei_pos - i
+                        if str_len*2+1 <= len(message.text) and message.text[i:mei_pos] == message.text[mei_pos+1:mei_pos+str_len+1]:
+                            decision = random.randint(0, 1)
+                            reply.text = ""
+                            if decision == 0:
+                                reply.text += "没"
+                            reply.text += message.text[i:mei_pos]
                             return reply
 
         return Error("命令不满足该插件")

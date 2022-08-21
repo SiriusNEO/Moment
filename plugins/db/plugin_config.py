@@ -46,4 +46,4 @@ THIS = "%this"
 
 WAIT = 60
 
-AUTO_SAVE_TIME = [9, 13, 20, 23]
+AUTO_SAVE_TIME = [13, 20]
