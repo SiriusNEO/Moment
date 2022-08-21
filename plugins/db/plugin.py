@@ -8,6 +8,9 @@ from core.error import Error
 
 from core.plugin import *
 
+import time
+from utils.log import Log
+
 class Database_Plugin(Plugin):
 
     def __init__(self):
@@ -118,6 +121,24 @@ class Database_Plugin(Plugin):
             return Error("未知数据库事件类型")
 
         return reply
+
+
+    async def plugin_task(self, send_method):
+        while True:
+            await asyncio.sleep(WAIT)
+            
+            if self.banned:
+                continue
+
+            now_time_local = time.localtime(time.time())
+
+            # Log.info("{} Working".format(self.get_name()))
+
+            # 自动保存
+            if now_time_local.tm_hour in AUTO_SAVE_TIME and now_time_local.tm_min == 42:
+                self.database.write_back()
+                await send_method(Message("[{}]({}) 自动存档完成, 数据与云端同步.".format(self.get_name(), Log.show_time())))
+
 
     """
         info_cut: 过长信息截断，用 ... 代替

@@ -43,3 +43,7 @@ SHADOW_CODE = "shadow_code"
 ID = "id"
 
 THIS = "%this"
+
+WAIT = 60
+
+AUTO_SAVE_TIME = [9, 13, 20, 23]

@@ -48,7 +48,6 @@ class Replier_Plugin(Plugin):
                     full_tp = TagPair(TAG_FULL, Message(cmd_args[2]), 0)
                     self.database.modify([key_tp], [], WORD_DEL)
                     self.database.modify([full_tp], [], WORD_DEL)
-                    self.database.write_back()
                     reply.text = "删除成功!"
                     return reply
                 else:
@@ -65,7 +64,6 @@ class Replier_Plugin(Plugin):
                         error = self.database.new([TagPair(tag, Message(cmd_args[1]), 0), TagPair(TAG_CM, message.quote, 0)])
                         if isinstance(error, Error):
                             return error
-                        self.database.write_back()
                         reply.text = "添加成功!"
                         return reply
         
