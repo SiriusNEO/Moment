@@ -60,6 +60,16 @@ class Random_Plugin(Plugin):
                     return Error("命令参数个数不正确", urge=self.get_name())
                 reply.text = random.choice(cmd_args[1:])
                 return reply
+            # rank part
+            elif cmd_args[0] == RANK_COMMAND:
+                if len(cmd_args) <= 1:
+                    return Error("命令参数个数不正确", urge=self.get_name())
+                obj_list = cmd_args[1:]
+                random.shuffle(obj_list)
+                reply.text = obj_list[0]
+                for i in range(1, len(obj_list)):
+                    reply.text += " > {}".format(obj_list[i])
+                return reply
             # A不A|A没A part
             else:
                 # 虽然重复代码严重, 但等发现第三个中间词再改吧
