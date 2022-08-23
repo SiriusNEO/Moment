@@ -50,10 +50,16 @@ class Picture:
 def parse_to_JSONable(msg: Message):
         if msg.pic is None:
             return {MSGHEAD_SYMBOL: "", "text": msg.text, "pic_url": None, "pic_path": None}
-        
-        pic_fn = random_str()
-        pic_path = save_image(msg.pic.pic_bytes, pic_fn)
-        return {MSGHEAD_SYMBOL: "", "text": msg.text, "pic_url": msg.pic.pic_url, "pic_path": pic_path}
+        if msg.pic.pic_path is None:
+            with open(IMG_PATH + PIC_NUM_FN, "r+") as f:
+                total_pic_num = int(f.read())
+                total_pic_num += 1
+                pic_fn = str(total_pic_num)
+                pic_path = save_image(msg.pic.pic_bytes, pic_fn)
+                f.seek(0)
+                f.write(str(total_pic_num))
+            return {MSGHEAD_SYMBOL: "", "text": msg.text, "pic_url": msg.pic.pic_url, "pic_path": pic_path}
+        return {MSGHEAD_SYMBOL: "", "text": msg.text, "pic_url": msg.pic.pic_url, "pic_path": msg.pic.pic_path}
 
 
 def parse_from_JSONable(JSONable):

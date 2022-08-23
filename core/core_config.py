@@ -1,4 +1,5 @@
 IMG_PATH = "local/img/"
+PIC_NUM_FN = "0_pic_num_file"
 
 TMP_FILENAME = "tmp"
 

@@ -169,7 +169,7 @@ class Database_Plugin(Plugin):
                 
                 for val in line[tag]:
                     # 一定是 msg
-                    ret += val.msg_2_str() + ", "
+                    ret += val.to_readable_str() + ", "
                 
                 if len(line[tag]) > 0:
                     ret = ret[0: len(ret)-2]

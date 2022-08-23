@@ -38,8 +38,13 @@ class Message:
             return False
 
         return True
+
+    def to_hash_str(self):
+        if self.pic is None:
+            return self.text + "|"
+        return self.text + "|" + str(self.pic.pic_bytes)
     
-    def msg_2_str(self):
+    def to_readable_str(self):
         ret = str()
 
         if self.text != None:

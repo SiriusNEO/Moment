@@ -38,7 +38,7 @@ class Alarm_Plugin(Plugin):
             if message.text == LS_ALARM:
                 reply.text = "当前闹钟, 共有 {} 个：".format(len(self.database.storage))
                 for line in self.database.storage:
-                    reply.text += "\n" + line[TAG_AL].text + "\t" + Message.msg_2_str(line[TAG_CONTENT])
+                    reply.text += "\n" + line[TAG_AL].text + "\t" + line[TAG_CONTENT].to_readable_str()
                 return reply
             
             cmd_args = message.text.split(" ")
