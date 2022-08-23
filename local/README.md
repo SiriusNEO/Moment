@@ -9,9 +9,6 @@ Usually, the directory looks like:
 ```
 local
 - img
-  - 0_pic_num_file
-  - 1
-  - ...
 - alaramdb.json
 - autotalkdb.json
 - cmdb_backup.json
