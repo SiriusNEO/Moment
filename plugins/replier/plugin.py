@@ -76,14 +76,14 @@ class Replier_Plugin(Plugin):
         key_tp = TagPair(TAG_KEY, message, 4)
         full_tp = TagPair(TAG_FULL, message, 0)
         
-        key_ret, _ = self.database.query([key_tp])
+        key_ret, key_ret_id = self.database.query([key_tp])
 
-        full_ret, _ = self.database.query([full_tp])
+        full_ret, full_ret_id = self.database.query([full_tp])
 
         if not isinstance(key_ret, Error) and len(key_ret) > 0:
             for ret_line in key_ret:
                 if TAG_CM in ret_line:
-                    hash_key = self._hash_list(ret_line[TAG_KEY])
+                    hash_key = key_ret_id[key_ret.index(ret_line)]
                     if hash_key in self._timelock_dict:
                         if self._timelock_dict[hash_key] <= time.time():
                             self._timelock_dict.pop(hash_key)
@@ -97,8 +97,8 @@ class Replier_Plugin(Plugin):
         if not isinstance(full_ret, Error) and len(full_ret) > 0:
             for ret_line in full_ret:
                 if TAG_CM in ret_line:
-                    hash_key = self._hash_list(ret_line[TAG_FULL])
-                    # Log.info(hash_key)
+                    hash_key = full_ret_id[full_ret.index(ret_line)]
+                    Log.info(hash_key)
                     if hash_key in self._timelock_dict:
                         if self._timelock_dict[hash_key] <= time.time():
                             self._timelock_dict.pop(hash_key)
@@ -110,14 +110,6 @@ class Replier_Plugin(Plugin):
                     return ret_line[TAG_CM]
         
         return Error("没有满足条件的回复")
-
-    
-    @staticmethod
-    def _hash_list(msg_list: list):
-        ret = ""
-        for msg in msg_list:
-            ret += msg.to_hash_str() + ", "
-        return ret
 
     
     @staticmethod

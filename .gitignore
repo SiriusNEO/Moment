@@ -1,4 +1,6 @@
-local/
+local/img/*
+!local/img/README.md
+local/*.json
 venv/
 test.py
 __pycache__/
