@@ -29,7 +29,9 @@ class Help_Plugin(Plugin):
             if len(cmd_args) <= 2:
                 plugin_num = len(self.bot.installed_plugins)
 
-                if cmd_args[0] == HELP_COMMAND:
+                if cmd_args[0] == PING_COMMAND and len(cmd_args) == 1:
+                    return Message("大家好啊, 我是 {}".format(self.bot.name))
+                elif cmd_args[0] == HELP_COMMAND:
                     reply = Message()
                     if len(cmd_args) == 1:
                         reply.text = "机器人 {} 运行于 {} 中. 对接前端: {}\n".format(self.bot.name, self.bot.env, self.bot.platform)

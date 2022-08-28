@@ -5,7 +5,7 @@ from graia.application.message.chain import MessageChain
 from graia.application import GraiaMiraiApplication
 from graia.application.message.elements.internal import Plain, Image, Quote, At, Source
 
-from frontend.mirai.frontend_config import WORKING_GROUP
+from frontend.frontend_config import CONFIG
 
 """
     graia message to moment message
@@ -52,7 +52,7 @@ async def moment2graia(app: GraiaMiraiApplication, message: Message) -> MessageC
     if message.at is not None:
         # At fails in this version
         # chain_list.append(At(message.at)) 
-        member_info = await app.getMemberInfo(message.at, WORKING_GROUP)
+        member_info = await app.getMemberInfo(message.at, CONFIG.get("working-group", prefix="graia-v4"))
         chain_list.append(Plain("@" + member_info.name + " "))
 
     if message.text != None:

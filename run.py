@@ -1,9 +1,52 @@
-# This created a handler
-# mirai -> graia -> moment
 
-import os
-print(os.getcwd())
+import sys
 
-# from plugins.random.dice import build
+from utils.log import Log
+from frontend.frontend_config import CONFIG
 
-import frontend.mirai.graia_launcher
+# command line
+if len(sys.argv) <= 1:
+    Log.error("缺少配置文件路径.")
+    print("使用方式: python3 run.py <the path of your yaml file>")
+    exit(1)
+
+yaml_path = sys.argv[1]
+
+# support platforms
+SUPPORT_PLATFORMS = ["graia-v4"]
+
+try:
+    with open(yaml_path, 'r', encoding="utf-8") as fp:
+        yaml_data = fp.read()
+        
+        CONFIG.init(yaml_data)
+
+        DEFAULT_NAME = "moment"
+        DEFAULT_ENV  = "unknown"
+
+        # boring part
+        if not CONFIG.is_in("name"):
+            Log.warn("配置文件缺少机器人名: name, 将使用默认名: {}".format(DEFAULT_NAME))
+            CONFIG.set("name", DEFAULT_NAME)
+        
+        if not CONFIG.is_in("env"):
+            Log.warn("配置文件缺少环境名: env, 将使用默认名: {}".format(DEFAULT_ENV))
+            CONFIG.set("env", DEFAULT_ENV)
+        
+        if not CONFIG.is_in("platform"):
+            Log.error("缺少对接平台. 至少需要指定一个对接平台!")
+            exit(1)
+        
+        if CONFIG.get("platform") not in SUPPORT_PLATFORMS:
+            Log.error("未知的平台. 当前支持: {}".format(SUPPORT_PLATFORMS))
+            exit(1)
+
+        Log.info("成功加载配置文件: {}".format(yaml_path))
+except Exception as e:
+    Log.error("读取配置文件: {} 发生错误!".format(yaml_path))
+    Log.error(e.args)
+    exit(1)
+
+
+if CONFIG.get("platform") == "graia-v4":
+    import frontend.graia_v4.graia_launcher

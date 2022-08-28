@@ -1,0 +1,25 @@
+# Moment user config template
+
+name:
+    Moment
+
+env:
+    CentOS
+
+platform:
+    graia-v4
+
+graia-v4:
+    host:          # mirai 的地址
+        your-host
+    port:          # mirai 的端口号
+        your-port
+    author-key:    # mah 的 author key
+        your-author-key
+    account:       # 机器人qq号
+        your-account
+    root-accounts: #可以对机器人发送更高命令的用户的qq号
+        - root1
+        - root2
+    working-group: # 工作的群聊
+        your-working-qq-group

@@ -8,8 +8,8 @@ from graia.application.message.elements.internal import Plain, At
 from graia.application.group import Group, Member
 
 # import: frontend
-from frontend.mirai.msg_parser import *
-from frontend.mirai.frontend_config import *
+from frontend.frontend_config import *
+from frontend.graia_v4.msg_parser import *
 
 # import: core
 from core.message import Message
@@ -38,14 +38,50 @@ from utils.log import Log
 from typing import Union, List
 
 """
+    Check Config
+"""
+PLATFORM = CONFIG.get("platform")
+
+checkPassed = (CONFIG.is_in("host", prefix=PLATFORM) and
+               CONFIG.is_in("port", prefix=PLATFORM) and
+               CONFIG.is_in("author-key", prefix=PLATFORM) and 
+               CONFIG.is_in("account", prefix=PLATFORM) and
+               CONFIG.is_in("root-accounts", prefix=PLATFORM) and
+               CONFIG.is_in("working-group", prefix=PLATFORM))
+
+CONFIG_TEMPLATE = """graia-v4:
+    host:          # mirai 的地址
+        your-host
+    port:          # mirai 的端口号
+        your-port
+    author-key:    # mah 的 author key
+        your-author-key
+    account:       # 机器人qq号
+        your-account
+    root-accounts: #可以对机器人发送更高命令的用户的qq号
+        - root1
+        - root2
+    working-group: # 工作的群聊
+        your-working-qq-group
+"""
+
+if not checkPassed:
+    Log.error("Platform {} 配置文件格式错误! 请保证配置文件中如下字段均正确填写:".format(PLATFORM))
+    print(CONFIG_TEMPLATE)
+    exit(1)
+else:
+    Log.info("配置对接 {} 成功! 检测到机器人账号: {}".format(PLATFORM, CONFIG.get("account", prefix=PLATFORM)))
+
+
+"""
     Bot initialization
 """
 bot = Bot(
-            name="moment",
-            account=ACCOUNT,
-            roots=ROOT_ACCOUNTS,
-            platform="Graia v4",
-            env="CentOS"
+            name=CONFIG.get("name"),
+            account=CONFIG.get("account", prefix=PLATFORM),
+            roots=CONFIG.get("root-accounts", prefix=PLATFORM),
+            platform=PLATFORM,
+            env=CONFIG.get("env")
         )
 
 help_plugin = Help_Plugin()
@@ -84,10 +120,10 @@ bcc = Broadcast(loop=loop)
 app = GraiaMiraiApplication(
     broadcast=bcc,
     connect_info=Session(
-        host="http://" + HOST + ":" + PORT,  # 填入 httpapi 服务运行的地址
-        authKey=AUTHKEY,  # 填入 authKey
-        account=ACCOUNT,  # 你的机器人的 qq 号
-        websocket=True  # Graia 已经可以根据所配置的消息接收的方式来保证消息接收部分的正常运作.
+        host="http://" + CONFIG.get("host", prefix=PLATFORM) + ":" + str(CONFIG.get("port", prefix=PLATFORM)),
+        authKey=CONFIG.get("author-key", prefix=PLATFORM),
+        account=CONFIG.get("account", prefix=PLATFORM),
+        websocket=True
     )
 )
 
@@ -102,7 +138,7 @@ async def send_group_message(message: Union[Message, List[Message]]):
         return
     
     graia_chain = await moment2graia(app, message)
-    await app.sendGroupMessage(WORKING_GROUP, graia_chain)
+    await app.sendGroupMessage(CONFIG.get("working-group", prefix="graia-v4"), graia_chain)
 
 # register it
 bot.register_send_method(send_group_message)
@@ -116,7 +152,7 @@ async def group_message_listener(app: GraiaMiraiApplication,
                                  member: Member,
                                  graia_chain: MessageChain):
     # only work in WORKING_GROUP
-    if group.id == WORKING_GROUP:
+    if group.id == CONFIG.get("working-group", prefix="graia-v4"):
         message = await graia2moment(app, graia_chain, member.id)
         
         # debug
@@ -130,6 +166,6 @@ async def group_message_listener(app: GraiaMiraiApplication,
 """
 bot.create_plugin_task(loop)
 
-Log.info("FrontEnd \"mirai & Graia\" started.")
+Log.info("FrontEnd {} started.".format(PLATFORM))
 
 app.launch_blocking()
