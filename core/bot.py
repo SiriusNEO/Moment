@@ -85,9 +85,13 @@ class Bot:
 
     def ban(self, plugin_name: str) -> Optional[Error]:
         if plugin_name not in self.name_2_plugin:
-            return Error("插件名不存在!")
+            return Error("插件名不存在: {}".format(plugin_name))
         
         plugin = self.name_2_plugin[plugin_name]
+
+        if plugin in self._ban_list:
+            return Error("插件已被禁用，无需重复操作: {}".format(plugin_name))
+
         self._ban_list.append(plugin)
 
         # 递归 ban
@@ -103,12 +107,19 @@ class Bot:
 
     def unban(self, plugin_name: str) -> Optional[Error]:
         if plugin_name not in self.name_2_plugin:
-            return Error("插件名不存在!")
+            return Error("插件名不存在: {}".format(plugin_name))
         
         plugin = self.name_2_plugin[plugin_name]
 
         if plugin not in self._ban_list:
-            return Error("插件未被禁用!")
+            return Error("插件未被禁用，无法解禁: {}".format(plugin_name))
+        
+        # 递归 unban
+        for requirement in plugin.requirements:
+            if self.is_banned(requirement): # 一定非 error, 因为 requirement 一定安装了
+                error = self.unban(requirement)
+                if error is not None:
+                    return error
 
         self._ban_list.remove(plugin)
         plugin.banned = False

@@ -68,11 +68,15 @@ class Help_Plugin(Plugin):
                             if 0 <= plugin_no < plugin_num:
                                 plugin_name = self.bot.installed_plugins[plugin_no].get_name()
                                 if cmd_args[0] == BAN_COMMAND:
-                                    self.bot.ban(plugin_name)
+                                    error = self.bot.ban(plugin_name)
+                                    if error is not None:
+                                        return Error(error.what, urge=self.get_name())
                                     return Message("{}: 禁用成功!".format(plugin_name))
                                 else:
                                     assert cmd_args[0] == UNBAN_COMMAND
-                                    self.bot.unban(plugin_name)
+                                    error = self.bot.unban(plugin_name)
+                                    if error is not None:
+                                        return Error(error.what, urge=self.get_name())
                                     return Message("{}: 解禁成功!".format(plugin_name))
                             else:
                                 return Error("没有此下标的插件!", urge=self.get_name())
@@ -83,14 +87,18 @@ class Help_Plugin(Plugin):
                                 for plugin_name in name_list:
                                     if plugin_name == self.get_name() or self.bot.is_banned(plugin_name):
                                         continue
-                                    self.bot.ban(plugin_name)
+                                    error = self.bot.ban(plugin_name)
+                                    if error is not None:
+                                        return Error(error.what, urge=self.get_name())
                                 return Message("全部禁用成功! (除了本插件)")
                             else:
                                 assert cmd_args[0] == UNBAN_COMMAND
                                 for plugin_name in name_list:
                                     if plugin_name == self.get_name() or not self.bot.is_banned(plugin_name):
                                         continue
-                                    self.bot.unban(plugin_name)
+                                    error = self.bot.unban(plugin_name)
+                                    if error is not None:
+                                        return Error(error.what, urge=self.get_name())
                                 return Message("全部解禁成功!")
                         
                         if cmd_args[1] == self.get_name():
