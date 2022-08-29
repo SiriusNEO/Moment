@@ -28,7 +28,8 @@ class Word_Plugin(Plugin):
                     return Error("太多词了!", urge=self.get_name())
                 
                 reply = Message()
-                reply.at = message.sender
+                # reply.at = message.sender  
+                # without at, you can translate the word directly by Translate Plugin
                 reply.text = "给你词: \n"
 
                 with open(WORD_PATH) as fp:
