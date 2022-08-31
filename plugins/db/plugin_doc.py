@@ -19,5 +19,7 @@ PLUGIN_DOC = """数据库插件支持两种命令: 通用数据库命令和特�
 特殊命令:
     - {} (数据写回到文件中)
     - {} (数据备份)
+    - {} (重新从文件中载回数据)
+    - {} (备份回滚)
 
-注: 特殊命令需要权限. """.format(COMMIT_COMMAND, BACKUP_COMMAND)
+注: 特殊命令需要权限. """.format(COMMIT_COMMAND, BACKUP_COMMAND, RELOAD_COMMAND, ROLLBACK_COMMAND)

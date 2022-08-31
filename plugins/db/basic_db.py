@@ -34,6 +34,16 @@ class DataBase:
         
         Log.info("database {0} init finish.".format(path))
     
+    def load_from(self, path=None):
+        if path is None:
+            path = self.path
+        try:
+            with open(path, "r") as fp:
+                self.storage = list(json.load(fp, object_hook=decode_hook))
+        except Exception as e:
+            return Error(e.args)
+
+    
     def write_back(self, path=None):
         if path is None:
             path = self.path

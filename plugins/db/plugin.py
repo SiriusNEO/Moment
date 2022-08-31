@@ -31,7 +31,7 @@ class Database_Plugin(Plugin):
     def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
-        if message.text == COMMIT_COMMAND or message.text == BACKUP_COMMAND:
+        if message.text == COMMIT_COMMAND or message.text == BACKUP_COMMAND or message.text == RELOAD_COMMAND or message.text == ROLLBACK_COMMAND:
             if message.sender not in self.roots:
                 return Error("权限不够", urge=self.get_name())
 
@@ -112,11 +112,20 @@ class Database_Plugin(Plugin):
         # 3 commit
         elif isinstance(event, CommitEvent):
             self.database.write_back()
-            reply.text = "写回成功!"
+            reply.text = "数据写回成功!"
         # 4 backup
         elif isinstance(event, BackupEvent):
             self.database.write_back(BACKUP_PATH)
-            reply.text = "备份成功!"
+            reply.text = "数据备份成功!"
+        # 5. reload
+        elif isinstance(event, ReloadEvent):
+            self.database.load_from()
+            reply.text = "数据刷新成功!"
+        # 6. rollback
+        elif isinstance(event, RollbackEvent):
+            self.database.load_from(BACKUP_PATH)
+            self.database.write_back()
+            reply.text = "数据回滚成功!"
         else:
             return Error("未知数据库事件类型")
 

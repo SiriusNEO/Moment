@@ -2,6 +2,8 @@
 
 COMMIT_COMMAND = "momcommit"
 BACKUP_COMMAND = "mombackup"
+RELOAD_COMMAND = "momreload"
+ROLLBACK_COMMAND = "momrollback"
 
 SPLIT = " "
 

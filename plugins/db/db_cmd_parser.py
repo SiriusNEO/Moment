@@ -182,9 +182,12 @@ def database_cmd_parse(raw: Message):
     if raw.text != None:
         if raw.text == COMMIT_COMMAND:
             return CommitEvent()
-        
-        if raw.text == BACKUP_COMMAND:
+        elif raw.text == BACKUP_COMMAND:
             return BackupEvent()
+        elif raw.text == RELOAD_COMMAND:
+            return ReloadEvent()
+        elif raw.text == ROLLBACK_COMMAND:
+            return RollbackEvent()
         
         index_match = re.match(INDEX_REGEX, raw.text)
         modify_match = re.match(MODIFY_REGEX, raw.text)

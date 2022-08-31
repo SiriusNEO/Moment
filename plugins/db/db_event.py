@@ -96,3 +96,15 @@ class CommitEvent(BaseDatabaseEvent):
 """
 class BackupEvent(BaseDatabaseEvent):
     ...
+
+"""
+    Reload Event
+"""
+class ReloadEvent(BaseDatabaseEvent):
+    ...
+
+"""
+    Rollback Event
+"""
+class RollbackEvent(BaseDatabaseEvent):
+    ...
