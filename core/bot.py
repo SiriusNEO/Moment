@@ -96,7 +96,7 @@ class Bot:
 
         # 递归 ban
         for other_plugin in self.installed_plugins:
-            if plugin.get_name() in other_plugin.requirements:
+            if plugin.get_name() in other_plugin.requirements and other_plugin not in self._ban_list:
                 error = self.ban(other_plugin.get_name())
                 if error is not None:
                     return error
