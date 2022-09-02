@@ -11,6 +11,6 @@ PLUGIN_DOC = """键值回复插件要求数据库中的信息拥有 key 或者 f
 - 多个cm会一起发回去
 
 兼容老命令:
-    - {} <关键词> <属性> (属性可设key/full, 默认为full. 必须有引用内容)
-    - {} {} <关键词> (删掉key与full为这个的数据条目)
-""".format(OLD_CM_COMMAND, OLD_CM_COMMAND, OLD_DEL_COMMAND)
+    - {} <关键词> (无引用内容. 表示直接触发一个key或者full)
+    - {} <关键词> <属性> (属性可设key/full, 默认为full. 必须有引用内容. 相当于key=关键词 cm=%this)
+    - {} {} <关键词> (删掉key与full为这个的数据条目)""".format(OLD_CM_COMMAND, OLD_CM_COMMAND, OLD_CM_COMMAND, OLD_DEL_COMMAND)

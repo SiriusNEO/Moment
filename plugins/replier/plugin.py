@@ -64,7 +64,13 @@ class Replier_Plugin(Plugin):
                         tag = TAG_FULL
                     
                     if message.quote is None:
-                        return Error("无引用内容!", urge=self.get_name())
+                        # return Error("无引用内容!", urge=self.get_name())
+                        key_result, _ = self.database.query([TagPair(TAG_KEY, Message(cmd_args[1]), 0)])
+                        full_result, _ = self.database.query([TagPair(TAG_FULL, Message(cmd_args[1]), 0)])
+                        if not isinstance(key_result, Error) and len(key_result) > 0:
+                            return key_result[0][TAG_CM]
+                        elif not isinstance(full_result, Error) and len(full_result) > 0:
+                            return full_result[0][TAG_CM]
                     else:
                         error = self.database.new([TagPair(tag, Message(cmd_args[1]), 0), TagPair(TAG_CM, message.quote, 0)])
                         if isinstance(error, Error):
