@@ -190,10 +190,17 @@ class DataBase:
                     line[modify.tag] = modify.val
             # 添加
             elif modify.typ == 1:
+                if modify.tag not in line:
+                    line[modify.tag] = list()
                 line[modify.tag].append(modify.val)
             # 删除
             elif modify.typ == 2:
-                line[modify.tag].remove(modify.val)
+                if modify.tag not in line:
+                    line[modify.tag] = list()
+                if modify.val in line[modify.tag]:
+                    line[modify.tag].remove(modify.val)
+                else:
+                    return Error("信息不在列表中!")
             else:
                 return Error("未知修改类型: {}".format(modify.typ))
 
@@ -276,10 +283,12 @@ class DataBase:
                             self.storage[self.storage.index(line)][target_tag] = []
                         elif self.tag_type[target_tag] == str:
                             self.storage[self.storage.index(line)][target_tag] = ""
-                        elif self.tag_type[target_tag] == Message():
+                        elif self.tag_type[target_tag] == Message:
                             self.storage[self.storage.index(line)][target_tag] = Message()
                         elif self.tag_type[target_tag] == int or self.tag_type[target_tag] == float:
                             self.storage[self.storage.index(line)][target_tag] = 0
+                        elif self.tag_type[target_tag] == dict:
+                            self.storage[self.storage.index(line)][target_tag] = {}
             else:
                 if word == WORD_DEL:
                     for line in lines:
@@ -289,8 +298,9 @@ class DataBase:
                         self.storage[self.storage.index(line)] = {}
         else:
             for modify in modifies:
-                self._single_modify(lines, modify)
-    
+                error = self._single_modify(lines, modify)
+                if error is not None:
+                    return error
 
     def new(self, modifies: list):
         new_line = [dict()]
@@ -310,7 +320,9 @@ class DataBase:
                     return Error("重复 tag 修改！")
 
         for modify in modifies:
-            self._single_modify(new_line, modify)
+            error = self._single_modify(new_line, modify)
+            if error is not None:
+                return error
 
         self.storage.append(new_line[0])
         

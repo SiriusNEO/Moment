@@ -66,8 +66,9 @@ def build(text: str) -> Union[DiceExpr, Error]:
             if cnt == 0:
                 bracket_list[len(bracket_list)-1].append(i)
     
-    encoded_text = text
+    encoded_text = text[:]
     if len(bracket_list) > 0:
+        # 不改变长度
         for bra in bracket_list:
             encoded_text = encoded_text[:bra[0]+1] + "?"*(bra[1] - bra[0] - 1) + encoded_text[bra[1]:]
     

@@ -3,7 +3,7 @@
 <div align="center">
 <img src="logo/big_logo.png" width="300px">
 
-![](https://img.shields.io/badge/python-3.6+-blue?style=for-the-badge&logo=python) ![](https://img.shields.io/badge/version-0.2dev-orange?style=for-the-badge&logo=dev.to)
+![](https://img.shields.io/badge/python-3.6+-blue?style=for-the-badge&logo=python) ![](https://img.shields.io/badge/version-0.3dev-orange?style=for-the-badge&logo=dev.to)
 
 
 > Capture every beautiful MOMENT in life
@@ -84,7 +84,7 @@ help
 - Pixiv: P站图片搬运.
 - PS: 云图片处理插件. 基于 Pillow 的简单图片处理.
 - Judge: 锐评插件. 开启时对图片作随机回复. (依赖 Database 插件)
-- Replier: 键值对回复器. 根据数据库中的 key/full 是否触发来发出对应回复。 (依赖 Database 插件)
+- Replier: 强大的键值对回复器. 功能多样, 匹配灵活. (依赖 Database 插件)
 
 
 

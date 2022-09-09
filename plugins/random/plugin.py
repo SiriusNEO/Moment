@@ -27,6 +27,8 @@ class Random_Plugin(Plugin):
             
             cmd_args = message.text.split(" ")
             
+            random.seed()
+
             # gk part
             if cmd_args[0] == GK_COMMAND:
                 reply.at = message.sender

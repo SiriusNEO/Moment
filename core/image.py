@@ -46,6 +46,9 @@ class Picture:
             return False
         
         return self.pic_bytes == other.pic_bytes
+    
+    def copy(self):
+        return Picture(self.pic_url, self.pic_path, self.pic_bytes)
 
 
 def parse_to_JSONable(msg: Message):

@@ -185,8 +185,10 @@ class Database_Plugin(Plugin):
 
                 if len(line[tag]) != 1:
                     ret += "]"
+            elif self.database.tag_type[tag] == dict:
+                ret += "{0}={1}".format(tag, "dict")
             else:
-                ret += "{0}={1}".format(tag, info_cut(str(line[tag])))
+                ret += "{0}={1}".format(tag, self._info_cut(str(line[tag])))
             ret += "; "
         return ret
 
@@ -195,7 +197,7 @@ class Database_Plugin(Plugin):
         真实值只能是 Message, int, float 三种类型之一
     """
     def _val_resolve(self, tag_pair: TagPair, event: BaseDatabaseEvent):
-        if self.database.tag_type[tag_pair.tag] == list:
+        if self.database.tag_type[tag_pair.tag] == list or self.database.tag_type[tag_pair.tag] == Message:
             if tag_pair.val == THIS:
                 if event.quote is None:
                     return Error("无引用的内容！")

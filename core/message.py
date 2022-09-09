@@ -38,6 +38,9 @@ class Message:
             return False
 
         return True
+    
+    def __str__(self):
+        return self.to_readable_str()
 
     def to_hash_str(self):
         if self.pic is None:
@@ -85,3 +88,17 @@ class Message:
         if self.quote != None:
             print("   > it has quote. show its quote now.\n")
             self.quote.display()
+    
+    def copy(self):
+        ret = Message()
+        ret.text = self.text
+        
+        if self.pic is not None:
+            ret.pic = self.pic.copy()
+        else:
+            ret.pic = None
+
+        ret.quote = self.quote
+        ret.at = self.at
+        ret.sender = self.sender
+        return ret
