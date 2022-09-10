@@ -185,14 +185,20 @@ class DataBase:
             if modify.typ == 0:
                 if self.tag_type[modify.tag] == list:
                     line[modify.tag] = list()
-                    line[modify.tag].append(modify.val)
+                    if type(modify.val) == list:
+                        line[modify.tag] += modify.val
+                    else:
+                        line[modify.tag].append(modify.val)
                 else:
                     line[modify.tag] = modify.val
             # 添加
             elif modify.typ == 1:
                 if modify.tag not in line:
                     line[modify.tag] = list()
-                line[modify.tag].append(modify.val)
+                if type(modify.val) == list:
+                    line[modify.tag] += modify.val
+                else:
+                    line[modify.tag].append(modify.val)
             # 删除
             elif modify.typ == 2:
                 if modify.tag not in line:
@@ -307,9 +313,6 @@ class DataBase:
         new_line[0][SHADOW_CODE] = id(new_line[0])
         
         for modify in modifies:
-            if modify.typ >= 1:
-                return Error("新创建条目时禁止 list 操作")
-            
             error = self._single_modify_check(new_line, modify)
 
             if error != None:

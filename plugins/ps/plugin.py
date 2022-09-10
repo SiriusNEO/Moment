@@ -25,7 +25,7 @@ class PS_Plugin(Plugin):
 
     def setup(self):
         if not IMPORT_FLAG:
-            raise "ps插件缺少关键库: Pillow"
+            raise Exception("ps插件缺少关键库: Pillow")
         super().setup()
 
     def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:

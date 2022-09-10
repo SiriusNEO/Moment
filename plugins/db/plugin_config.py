@@ -5,6 +5,9 @@ BACKUP_COMMAND = "mombackup"
 RELOAD_COMMAND = "momreload"
 ROLLBACK_COMMAND = "momrollback"
 
+RECORD_COMMAND = "recording"
+RECORD_MAX_NUM = 10
+
 SPLIT = " "
 
 INDEX_SYMBOL = ["[", "]"]
@@ -45,6 +48,7 @@ SHADOW_CODE = "shadow_code"
 ID = "id"
 
 THIS = "%this"
+ABOVE  = "%above"
 
 WAIT = 60
 

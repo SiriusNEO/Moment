@@ -27,9 +27,21 @@ class Database_Plugin(Plugin):
         self.database.tag_type["id"] = int
         super().setup()
 
+        self.record_flag = False
+        self.record_list = []
+
 
     def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
+
+        if message.text == RECORD_COMMAND:
+            if self.record_flag:
+                self.record_flag = False
+                return Message("接收到第二次命令, Moment 已放弃记录")
+            else:
+                self.record_flag = True    
+                self.record_list = []
+                return Message("得得")
 
         if message.text == COMMIT_COMMAND or message.text == BACKUP_COMMAND or message.text == RELOAD_COMMAND or message.text == ROLLBACK_COMMAND:
             if message.sender not in self.roots:
@@ -38,6 +50,15 @@ class Database_Plugin(Plugin):
         event = database_cmd_parse(message)
 
         if event is None:
+            if self.record_flag:
+                if len(self.record_list) >= RECORD_MAX_NUM:
+                    self.record_list = []
+                    self.record_flag = False
+                    return Message(" 消息太多了, Moment 已自动放弃记录")
+                
+                self.record_list.append(message)
+                # 正常收集, 用一个占位 Error 返回
+                return Error("")
             return Error("parse failed.")
 
         reply = Message()
@@ -200,18 +221,26 @@ class Database_Plugin(Plugin):
         if self.database.tag_type[tag_pair.tag] == list or self.database.tag_type[tag_pair.tag] == Message:
             if tag_pair.val == THIS:
                 if event.quote is None:
-                    return Error("无引用的内容！")
+                    return Error("无引用的内容！", urge=self.get_name())
                 tag_pair.val = event.quote
+            elif tag_pair.val == ABOVE:
+                if self.database.tag_type[tag_pair.tag] != list:
+                    return Error("字段 {} 类型不是 List[Message]".format(tag_pair.tag), urge=self.get_name())
+                
+                tag_pair.val = self.record_list[:]
+
+                self.record_list = []
+                self.record_flag = False
             else:
                 text = tag_pair.val
                 tag_pair.val = Message(text)
         elif self.database.tag_type[tag_pair.tag] == int:
             if not str.isdigit(tag_pair.val):
-                return Error("{0} 应该是个整数！".format(tag_pair.tag))
+                return Error("{0} 应该是个整数！".format(tag_pair.tag), urge=self.get_name())
             tag_pair.val = int(tag_pair.val)
         elif self.database.tag_type[tag_pair.tag] == float:
             if not is_float(tag_pair.val):
-                return Error("{0} 应该是个浮点数！".format(tag_pair.tag))
+                return Error("{0} 应该是个浮点数！".format(tag_pair.tag), urge=self.get_name())
             tag_pair.val = float(tag_pair.val)
 
     """

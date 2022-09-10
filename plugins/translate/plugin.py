@@ -21,7 +21,7 @@ class Translate_Plugin(Plugin):
     
     def setup(self):
         if not IMPORT_FLAG:
-            raise "翻译插件缺少关键库: googletrans"
+            raise Exception("翻译插件缺少关键库: googletrans")
         super().setup()
     
 

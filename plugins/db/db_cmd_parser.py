@@ -44,6 +44,11 @@ def assign_parse(text: str, assign_op: list):
 
         if assign == "":
             continue
+        
+        # 语法糖: [1] 相当于 [id=1]
+        if str.isdigit(assign):
+            ret.append([TAG_ID, assign, 0])
+            continue
 
         assign_pos, assign_typ = assign_find(assign, assign_op)
 
@@ -60,14 +65,11 @@ def assign_parse(text: str, assign_op: list):
     return ret
 
 """
-    语法糖: [id=1] 相当于 [1]
+    特判 []
 """
-def index_parse(text: str):
+def empty_parse(text: str):
     if text == "":
         return []
-    
-    if str.isdigit(text):
-        return [[TAG_ID, text, 0]]
     
     return None
 
@@ -123,7 +125,7 @@ def get_event(text: str):
         return ret
     
     left_assign = assign_parse(bracket_raw[0], QUERY_ASSIGN)
-    left_other = index_parse(bracket_raw[0])
+    left_other = empty_parse(bracket_raw[0])
 
     target_tag = with_tag_parse(bracket_raw[1])
     if target_tag is not None:
