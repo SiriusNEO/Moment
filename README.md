@@ -3,7 +3,7 @@
 <div align="center">
 <img src="logo/big_logo.png" width="300px">
 
-![](https://img.shields.io/badge/python-3.6+-blue?style=for-the-badge&logo=python) ![](https://img.shields.io/badge/version-0.3dev-orange?style=for-the-badge&logo=dev.to)
+![](https://img.shields.io/badge/python-3.6+-blue?style=for-the-badge&logo=python) ![](https://img.shields.io/badge/version-0.2dev-orange?style=for-the-badge&logo=dev.to) [![](https://img.shields.io/badge/docs-here-purple?style=for-the-badge&logo=jekyll)](http://192.144.230.76:9000/docs/)
 
 
 > Capture every beautiful MOMENT in life
