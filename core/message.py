@@ -47,11 +47,11 @@ class Message:
             return self.text + "|"
         return self.text + "|" + str(self.pic.pic_bytes)
     
-    def to_readable_str(self):
+    def to_readable_str(self, limit = True):
         ret = str()
 
         if self.text != None:
-            if len(self.text) > 8:
+            if limit and len(self.text) > 8:
                 ret += self.text[:8] + "..."
             else:
                 ret += self.text

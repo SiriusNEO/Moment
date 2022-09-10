@@ -113,7 +113,10 @@ class Database_Plugin(Plugin):
                     reply.text = "共有 {0} 条数据:\n".format(len(result))
                     for i in range(len(result)):
                         # to do: 更好的显示方式
-                        reply.text += self._display_line(result[i], result_id[i])
+                        if len(result) == 1:
+                            reply.text += self._display_line(result[i], result_id[i], False)
+                        else:
+                            reply.text += self._display_line(result[i], result_id[i])
                         if i < len(result)-1:
                             reply.text += "\n"
         # 1 modify
@@ -182,7 +185,7 @@ class Database_Plugin(Plugin):
     """
         display_line: 显示数据库中的一行 (line)
     """
-    def _display_line(self, line: dict, id: int):
+    def _display_line(self, line: dict, id: int, limit = True):
         ret = "{0}: ".format(id)
         if not line:
             # 空数据条目
@@ -197,19 +200,31 @@ class Database_Plugin(Plugin):
                 if len(line[tag]) != 1:
                     ret += "["
                 
-                for val in line[tag]:
-                    # 一定是 msg
-                    ret += val.to_readable_str() + ", "
+                if limit:
+                    for val in line[tag][:MAX_LIST_ITEMS]:
+                        ret += val.to_readable_str(limit) + ", "
+                else:
+                    for val in line[tag]:
+                        # 一定是 msg
+                        ret += val.to_readable_str(limit) + ", "
                 
                 if len(line[tag]) > 0:
                     ret = ret[0: len(ret)-2]
+                
+                if limit and len(line[tag]) > MAX_LIST_ITEMS:
+                    ret = ret + "..."
 
                 if len(line[tag]) != 1:
                     ret += "]"
             elif self.database.tag_type[tag] == dict:
                 ret += "{0}={1}".format(tag, "dict")
+            elif self.database.tag_type[tag] == Message:
+                ret += "{0}={1}".format(tag, line[tag].to_readable_str(limit))
             else:
-                ret += "{0}={1}".format(tag, self._info_cut(str(line[tag])))
+                if limit:
+                    ret += "{0}={1}".format(tag, self._info_cut(str(line[tag])))
+                else:
+                    ret += "{0}={1}".format(tag, str(line[tag]))
             ret += "; "
         return ret
 
