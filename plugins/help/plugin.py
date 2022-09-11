@@ -31,6 +31,16 @@ class Help_Plugin(Plugin):
 
                 if cmd_args[0] == PING_COMMAND and len(cmd_args) == 1:
                     return Message("大家好啊, 我是 {}".format(self.bot.name))
+                elif cmd_args[0] == MONITER_COMMAND and len(cmd_args) == 1:
+                    reply = Message("")
+                    for i in range(plugin_num):
+                        plugin = self.bot.installed_plugins[i]
+                        status = MONITER_BANNED if self.bot.is_banned(plugin.get_name()) else MONITER_RUNNING
+                        reply.text += "[{}:{}]".format(plugin.get_name(), status)
+                        if i != plugin_num-1:
+                            reply.text += " "
+                    return reply
+                        
                 elif cmd_args[0] == HELP_COMMAND:
                     reply = Message()
                     if len(cmd_args) == 1:

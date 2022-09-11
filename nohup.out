@@ -1,0 +1,28 @@
+[2022-09-12 01:36:12,036][INFO]: initializing app...
+[2022-09-12 01:36:12,049][INFO]: detecting remote's version...
+[2022-09-12 01:36:12,056][INFO]: detected remote's version: 1.12.0
+[2022-09-12 01:36:12,058][INFO]: using pure websocket to receive event
+[2022-09-12 01:36:12,058][INFO]: event receive method checked.
+[2022-09-12 01:36:12,058][INFO]: this application's initialization has been completed.
+[2022-09-12 01:36:12,058][INFO]: --- setting start ---
+[2022-09-12 01:36:12,058][INFO]: broadcast using: <graia.broadcast.Broadcast object at 0x7f4631799dc0>
+[2022-09-12 01:36:12,058][INFO]: enable log of chat: yes
+[2022-09-12 01:36:12,058][INFO]: debug: no
+[2022-09-12 01:36:12,058][INFO]: version(remote): 1.12.0
+[2022-09-12 01:36:12,058][INFO]: --- setting end ---
+[2022-09-12 01:36:12,058][INFO]: application has been initialized, used 0.0223s
+[2022-09-12 01:36:12,058][INFO]: websocket daemon: websocket connection starting...
+[2022-09-12 01:36:12,062][INFO]: websocket: connected
+[2022-09-12 01:36:12,062][INFO]: websocket: ping task created
+[2022-09-12 01:36:19,767][INFO]: 1378438181: [0x132(973912389] siriusneo(1713833595) -> '[mirai:source:4649,1662917779]ping'
+[2022-09-12 01:36:20,009][INFO]: [BOT 1378438181] Group(973912389) <- '大家好啊, 我是 moment-debug-0.3dev'
+INFO:root:Current time is 1662917785144866786 (unixNano)
+INFO:root:Last Session Was Created At 1662917644249875597 (unixNano)
+INFO:root:Loading Last Session
+INFO:root:Collecting Cookies
+INFO:root:Cookies Coollected Successfully!
+INFO:root:Opening Door with ID 5f75c3a21a74423f9ab0ab685a6a6aa3
+INFO:root:Door should be Opened
+INFO:root:Writing Operation Record
+[2022-09-12 01:36:27,886][INFO]: 1378438181: [0x132(973912389] siriusneo(1713833595) -> '[mirai:source:4651,1662917784]开门'
+[2022-09-12 01:36:28,099][INFO]: [BOT 1378438181] Group(973912389) <- '开门成功!'

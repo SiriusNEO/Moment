@@ -40,6 +40,7 @@ class Pixiv_Plugin(Plugin):
                 # no tag
                 else:
                     self.task_queue.append([self.task_cnt])
+                self.task_cnt += 1
                 self.task_lock = False
                 return Message("正在获取ing, 别急")
 
@@ -47,11 +48,12 @@ class Pixiv_Plugin(Plugin):
     
 
     async def plugin_task(self, send_method):
-
+        
         while True:
             await asyncio.sleep(WAIT)
 
             if self.banned:
+                self.task_queue = []
                 continue
             
             if not self.task_lock and len(self.task_queue) > 0:

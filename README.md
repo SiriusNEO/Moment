@@ -95,6 +95,7 @@ help
 - [mirai](https://github.com/mamoe/mirai) 高效率 QQ 机器人支持库
 - [GraiaApplication](https://github.com/GraiaProject/Application)  基于 mirai-api-http 的 Python 框架
 - [ABot-Graia](https://github.com/djkcyl/ABot-Graia)  借用了 Pixiv 的 api 
+- [jLock](https://github.com/cmd2001/jLock)  用于编写 SJTUDoor 插件
 
 
 

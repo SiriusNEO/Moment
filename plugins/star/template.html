@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        p{
+            border-radius: 3px;
+            width: 300px;
+			word-wrap: break-word;
+			margin: 3px;
+			padding: 8px;
+            background: white;
+			font-size: medium;
+        }
+		div{
+			position: relative;
+			top: -6px;
+			left: -8px;
+            width: 320px;
+			padding: 6px;
+			background: {background_color};
+		}
+		.username {
+			position: relative;
+            top: -7px;
+			left: 5px;
+			font-size: 15;
+        }
+		.sendtime {
+			position: relative;
+			left: 15px;
+            top: -7px;
+			color: grey;
+			font-size: x-small;
+		}
+		.star {
+			position: relative;
+			left: 170px;
+            top: -2px;
+			font-size:30px;
+			color: orange;
+		}
+    </style>
+</head>
+<body>
+	<div>
+		<p>
+			<img id="avatar" src="[avatar_path]" style="height:27px; border-radius:70% 70% 70% 70%">
+			<span class="username">[username]</span>
+			<span class="sendtime">[sendtime]</span>
+			<span class="star"> &#9733; </span>
+		</p>
+		<p>
+			[text]<br><br><img id="pic" src="[pic_path]" style="width:297px; border-radius:5% 5% 5% 5%">
+		</p>
+	</div>
+</body>
+</html>

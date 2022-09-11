@@ -8,14 +8,17 @@ from core.error import Error
 from utils.log import Log
 from typing import Optional, List
 
+from frontend.frontend_config import YamlConfig
+
 class Bot:
 
-    def __init__(self, name: str, account: int, roots: list, platform: str, env: str):
-        self.name = name
-        self.account = account
-        self.roots = roots
+    def __init__(self, platform: str, config: YamlConfig):
+        self.name = config.get("name")
+        self.account = config.get("account", prefix=platform)
+        self.roots = config.get("root-accounts", prefix=platform)
         self.platform = platform
-        self.env = env
+
+        self.env = config.get("env")
         self.installed_plugins = []
         self.installed_plugins_name = []
         
@@ -24,6 +27,31 @@ class Bot:
         self._ban_list = []
         self._send_method = None
 
+        prepared_plugins = config.get("prepared_plugins")
+
+        if config.is_in("plugins"):
+            name_2_plugin = {}
+
+            for i in range(len(prepared_plugins)):
+                name_2_plugin[prepared_plugins[i].get_name()] = prepared_plugins[i]
+
+            install_list = config.get("plugins")
+            for i in range(len(install_list)):
+                if install_list[i] not in name_2_plugin:
+                    raise Exception("未知的插件名: {}".format(install_list[i]))
+                
+                plugin = name_2_plugin[install_list[i]]
+
+                if plugin.get_name() == "Help":
+                    self.install(plugin, self)
+                elif plugin.get_name() == "Database":
+                    self.install(plugin)
+                    database = plugin.database
+                elif plugin.get_name() == "Replier" or plugin.get_name() == "Star":
+                    self.install(plugin, database)
+                else:
+                    self.install(plugin)
+    
     
     def register_send_method(self, send_method):
         if not callable(send_method):

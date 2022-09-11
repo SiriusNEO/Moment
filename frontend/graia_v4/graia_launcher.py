@@ -16,21 +16,6 @@ from core.message import Message
 from core.error import Error
 from core.bot import Bot
 
-# import: plugins
-from plugins.help.plugin import Help_Plugin
-from plugins.db.plugin import Database_Plugin
-from plugins.replier.plugin import Replier_Plugin
-from plugins.random.plugin import Random_Plugin
-from plugins.touhou.plugin import Touhou_Plugin
-from plugins.translate.plugin import Translate_Plugin
-from plugins.hello.plugin import Hello_Plugin
-from plugins.alarm.plugin import Alarm_Plugin
-from plugins.word.plugin import Word_Plugin
-from plugins.autotalk.plugin import Autotalk_Plugin
-from plugins.pixiv.plugin import Pixiv_Plugin
-from plugins.ps.plugin import PS_Plugin
-from plugins.judge.plugin import Judge_Plugin
-
 # import: log
 from utils.log import Log
 
@@ -76,41 +61,7 @@ else:
 """
     Bot initialization
 """
-bot = Bot(
-            name=CONFIG.get("name"),
-            account=CONFIG.get("account", prefix=PLATFORM),
-            roots=CONFIG.get("root-accounts", prefix=PLATFORM),
-            platform=PLATFORM,
-            env=CONFIG.get("env")
-        )
-
-help_plugin = Help_Plugin()
-database_plugin = Database_Plugin()
-replier_plugin = Replier_Plugin()
-random_plugin = Random_Plugin()
-touhou_plugin = Touhou_Plugin()
-translate_plugin = Translate_Plugin()
-hello_plugin = Hello_Plugin()
-alarm_plugin = Alarm_Plugin()
-word_plugin = Word_Plugin()
-autotalk_plugin = Autotalk_Plugin()
-pixiv_plugin = Pixiv_Plugin()
-ps_plugin = PS_Plugin()
-judge_plugin = Judge_Plugin()
-
-bot.install(help_plugin, bot)
-bot.install(database_plugin)
-bot.install(random_plugin)
-bot.install(touhou_plugin)
-bot.install(translate_plugin)
-bot.install(hello_plugin)
-bot.install(alarm_plugin)
-bot.install(word_plugin)
-bot.install(autotalk_plugin)
-bot.install(pixiv_plugin)
-bot.install(ps_plugin)
-bot.install(judge_plugin)
-bot.install(replier_plugin, database_plugin.database)
+bot = Bot(platform=PLATFORM, config=CONFIG)
 
 """
     Graia initialization

@@ -23,3 +23,6 @@ graia-v4:
         - root2
     working-group: # 工作的群聊
         your-working-qq-group
+
+plugins:
+    - Help

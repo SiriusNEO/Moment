@@ -47,6 +47,31 @@ except Exception as e:
     Log.error(e.args)
     exit(1)
 
+# import: plugins
+from plugins.help.plugin import Help_Plugin
+from plugins.db.plugin import Database_Plugin
+from plugins.replier.plugin import Replier_Plugin
+from plugins.random.plugin import Random_Plugin
+from plugins.touhou.plugin import Touhou_Plugin
+from plugins.translate.plugin import Translate_Plugin
+from plugins.hello.plugin import Hello_Plugin
+from plugins.alarm.plugin import Alarm_Plugin
+from plugins.word.plugin import Word_Plugin
+from plugins.autotalk.plugin import Autotalk_Plugin
+from plugins.pixiv.plugin import Pixiv_Plugin
+from plugins.ps.plugin import PS_Plugin
+from plugins.judge.plugin import Judge_Plugin
+from plugins.browser.plugin import Browser_Plugin
+from plugins.star.plugin import Star_Plugin
+from plugins.sjtudoor.plugin import SJTUDoor_Plugin
+
+CONFIG.put("prepared_plugins",
+[
+    Help_Plugin(), Database_Plugin(), Replier_Plugin(), Random_Plugin(),
+    Touhou_Plugin(), Translate_Plugin(), Hello_Plugin(), Alarm_Plugin(),
+    Word_Plugin(), Autotalk_Plugin(), Pixiv_Plugin(), PS_Plugin(), Judge_Plugin(),
+    Browser_Plugin(), Star_Plugin(), SJTUDoor_Plugin()
+])
 
 if CONFIG.get("platform") == "graia-v4":
     import frontend.graia_v4.graia_launcher
