@@ -2,11 +2,12 @@ local/img/*
 !local/img/README.md
 !local/img/avatar/default.png
 docs/*
-!docs/collections/*
+!docs/collections/
 !docs/_config.yml
 !docs/favicon.ico
 !docs/Gemfile
 !docs/index.md
+!docs/assets/
 local/*.json
 venv/
 test.py
