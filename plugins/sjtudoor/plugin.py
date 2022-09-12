@@ -36,15 +36,44 @@ class SJTUDoor_Plugin(Plugin):
 
         super().setup(bot)
 
+        self.task_queue = []
+        self.task_lock = False
+
+
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text is not None:
             if message.text in OPENDOOR_WORDS:
-                ret_code = os.system("python3 {}".format(self.jLock_mainfile_path))
-                if ret_code == 0:
-                    return Message("开门成功!")
+                self.task_lock = True
+                
+                if message.sender not in DORMITORY_MEMBERS_MAP:
+                    opener = "宿舍外人员"
                 else:
-                    return Error("开门失败QAQ", urge=self.get_name())
+                    opener = DORMITORY_MEMBERS_MAP[message.sender]
+                    self.task_queue.append(opener)
+
+                self.task_lock = False
+                return Message("正在尝试开门, 别急喵")
 
         return Error("命令不满足该插件")
+    
+
+    async def plugin_task(self, send_method):
+        
+        while True:
+            await asyncio.sleep(WAIT)
+
+            if self.banned:
+                self.task_queue = []
+                continue
+            
+            if not self.task_lock and len(self.task_queue) > 0:
+                task = self.task_queue[0]
+                self.task_queue.remove(task)
+
+                ret_code = os.system("python3 {}".format(self.jLock_mainfile_path))
+                if ret_code == 0:
+                    await send_method(Message("由{}成功开门, 预计{}秒后关门".format(task, CLOSE_DOOR_TIME)))
+                else:
+                    await send_method(Message("开门失败"))

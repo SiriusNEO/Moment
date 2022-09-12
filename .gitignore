@@ -1,5 +1,6 @@
 local/img/*
 !local/img/README.md
+!local/img/avatar/default.png
 local/*.json
 venv/
 test.py
