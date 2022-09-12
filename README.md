@@ -3,7 +3,7 @@
 <div align="center">
 <img src="logo/big_logo.png" width="300px">
 
-![](https://img.shields.io/badge/python-3.6+-blue?style=for-the-badge&logo=python) ![](https://img.shields.io/badge/version-0.2dev-orange?style=for-the-badge&logo=dev.to) [![](https://img.shields.io/badge/docs-here-purple?style=for-the-badge&logo=jekyll)](http://192.144.230.76:9000/docs/)
+![](https://img.shields.io/badge/python-3.6+-blue?style=for-the-badge&logo=python) ![](https://img.shields.io/badge/version-0.4dev-orange?style=for-the-badge&logo=dev.to) [![](https://img.shields.io/badge/docs-here-purple?style=for-the-badge&logo=jekyll)](http://192.144.230.76:9000/docs/)
 
 
 > Capture every beautiful MOMENT in life
@@ -62,7 +62,7 @@ PS: 改动其它地方的配置要注意相应的文件路径位置。一般来�
 
 ## Plugins
 
-目前 Moment 拥有 13 个插件，即 13 个不同的功能。在使用时可以用命令
+目前 Moment 拥有 16 个插件，即 16 个不同的功能。在使用时可以用命令
 
 ```
 help
@@ -85,7 +85,9 @@ help
 - PS: 云图片处理插件. 基于 Pillow 的简单图片处理.
 - Judge: 锐评插件. 开启时对图片作随机回复. (依赖 Database 插件)
 - Replier: 强大的键值对回复器. 功能多样, 匹配灵活. (依赖 Database 插件)
-
+- Browser: 浏览器插件. 给予目标网址一个访问截图.
+- Star: 精选评论展示插件. (依赖 Database 和 Browser 插件)
+- SJTUDoor: SJTU寝室开门插件. 对机器人说句话让它开宿舍门. 
 
 
 ## Thanks

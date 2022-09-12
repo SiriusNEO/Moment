@@ -1,4 +1,6 @@
 from core.plugin import *
+from core.bot import Bot
+
 from core.image import save_image, Picture
 from core.core_config import LOCAL_FILE_URL
 
@@ -23,12 +25,12 @@ class PS_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
 
-    def setup(self):
+    def setup(self, bot: Bot):
         if not IMPORT_FLAG:
             raise Exception("ps插件缺少关键库: Pillow")
-        super().setup()
+        super().setup(bot)
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text is not None:

@@ -11,6 +11,8 @@ from plugins.browser.basic_browser import BrowserManager
 from plugins.db.basic_db import DataBase
 
 from core.plugin import *
+from core.bot import Bot
+
 from utils.log import Log
 
 from core.image import *
@@ -32,17 +34,13 @@ class Star_Plugin(Plugin):
             )
     
 
-    def setup(self, database: DataBase):
-        database.tag_type[TAG_STAR] = Message
-        self.database = database
-
-        super().setup()
-
-        self.task_queue = []
-        self.task_lock = False
+    def setup(self, bot: Bot):
+        self.database = bot.require_info(plugin_name="Database", member_name="database")
+        self.database.tag_type[TAG_STAR] = Message
+        super().setup(bot)
     
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text is not None:
@@ -55,9 +53,57 @@ class Star_Plugin(Plugin):
                 if not str.isdigit(cmd_args[1]):
                     return Error("参数类型不对, 第二个参数是一个非负整数", urge=self.get_name())
                 
-                self.task_lock = True
-                self.task_queue.append(int(cmd_args[1]))
-                self.task_lock = False
+                star_id = int(cmd_args[1])
+
+                query_result, _ = self.database.query([TagPair(TAG_ID, star_id, 0)])
+
+                if isinstance(query_result, Error) or len(query_result) == 0:
+                    return Error("未找到 id:{} 对应的评论".format(star_id), urge=self.name())
+                
+                if TAG_STAR not in query_result[0]:
+                    return Error("id: {} 的评论需要一个精品标记 (star字段)".format(star_id), urge=self.name())
+                
+                if TAG_CM not in query_result[0] or len(query_result[0][TAG_CM]) == 0:
+                    return Error("id: {} 的评论需要一个评论内容 (cm字段)".format(star_id), urge=self.name())
+                
+                star_info = query_result[0][TAG_STAR].text
+                star_msg  = query_result[0][TAG_CM][0]
+
+                if star_info is None or re.match(STAR_REGEX, star_info) is None:
+                    return Error("star字段格式错误: 应该是 <作者名>(<时间>)".format(star_id), urge=self.get_name())
+
+                left_bra_pos = star_info.find("(")
+                star_author = star_info[:left_bra_pos]
+                star_time   = star_info[left_bra_pos+1:len(star_info)-1]
+
+                pic_path = "no_pic" if star_msg.pic is None else star_msg.pic.pic_path
+
+                self.render_html(
+                    username=star_author, 
+                    sendtime=star_time, 
+                    avatar_path="../../" + IMG_PATH + AVATAR_DIR + star_author + AVATAR_FORMAT, 
+                    text=star_msg.text, 
+                    pic_path="../../" + pic_path
+                )
+
+                try:
+                    async with async_playwright() as pw:
+                        async with BrowserManager(pw, 320, 10) as page:
+                            abs_path = os.path.dirname(__file__) + "/" + HTML_RENDERED
+                            Log.info("abs_path:", abs_path)
+                            await page.goto("file://" + abs_path)
+                            card = await page.query_selector("div")
+                            screenshot = await card.screenshot(timeout=1000)
+                except Exception as e:
+                    return Error("制作精品评论发生错误... {}".format(e.args), urge=self.get_name())
+
+                if isinstance(screenshot, bytes):
+                    screenshot_path = save_image(screenshot, file_name=TMP_FILENAME)
+                    reply = Message()
+                    reply.pic = Picture(LOCAL_FILE_URL, pic_path=screenshot_path)
+                    return reply
+                else:
+                    return Error("制作精品评论发生错误...", urge=self.get_name())
 
                 # 不输出
                 return Error("")
@@ -97,76 +143,5 @@ class Star_Plugin(Plugin):
 
         with open(PLUGIN_PATH + HTML_RENDERED, 'w') as rendered_fp:
             rendered_fp.write(rendered)
-    
-
-    async def plugin_task(self, send_method):
-
-        while True:
-            await asyncio.sleep(WAIT)
-
-            if self.banned:
-                self.task_queue = []
-                continue
-            
-            if not self.task_lock and len(self.task_queue) > 0:
-                task = self.task_queue[0]
-                self.task_queue.remove(task)
-
-                # Log.info("star task:", task)
-
-                query_result, _ = self.database.query([TagPair(TAG_ID, task, 0)])
-
-                if isinstance(query_result, Error) or len(query_result) == 0:
-                    await send_method(Message("未找到 id:{} 对应的评论".format(task)))
-                    continue
-                
-                if TAG_STAR not in query_result[0]:
-                    await send_method(Message("id: {} 的评论需要一个精品标记 (star字段)".format(task)))
-                    continue
-                
-                if TAG_CM not in query_result[0] or len(query_result[0][TAG_CM]) == 0:
-                    await send_method(Message("id: {} 的评论需要一个评论内容 (cm字段)".format(task)))
-                    continue
-                
-                star_info = query_result[0][TAG_STAR].text
-                star_msg  = query_result[0][TAG_CM][0]
-
-                if star_info is None or re.match(STAR_REGEX, star_info) is None:
-                    await send_method(Message("star字段格式错误: 应该是 <作者名>(<时间>)".format(task)))
-                    continue
-
-                left_bra_pos = star_info.find("(")
-                star_author = star_info[:left_bra_pos]
-                star_time   = star_info[left_bra_pos+1:len(star_info)-1]
-
-                pic_path = "no_pic" if star_msg.pic is None else star_msg.pic.pic_path
-
-                self.render_html(
-                    username=star_author, 
-                    sendtime=star_time, 
-                    avatar_path="../../" + IMG_PATH + AVATAR_DIR + star_author + AVATAR_FORMAT, 
-                    text=star_msg.text, 
-                    pic_path="../../" + pic_path
-                )
-
-                try:
-                    async with async_playwright() as pw:
-                        async with BrowserManager(pw, 330, 10) as page:
-                            abs_path = os.path.dirname(__file__) + "/" + HTML_RENDERED
-                            Log.info("abs_path:", abs_path)
-                            await page.goto("file://" + abs_path)
-                            card = await page.query_selector("div")
-                            screenshot = await card.screenshot(timeout=1000)
-                except Exception as e:
-                    await send_method(Message("制作精品评论发生错误... {}".format(e.args)))
-                    continue
-
-                if isinstance(screenshot, bytes):
-                    screenshot_path = save_image(screenshot, file_name=TMP_FILENAME)
-                    reply = Message()
-                    reply.pic = Picture(LOCAL_FILE_URL, pic_path=screenshot_path)
-                    await send_method(reply)
-                else:
-                    await send_method(Message("制作精品评论发生错误..."))
     
 

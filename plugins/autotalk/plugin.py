@@ -1,4 +1,5 @@
 from core.plugin import *
+from core.bot import Bot
 
 from plugins.autotalk.plugin_config import *
 from plugins.autotalk.plugin_doc import PLUGIN_DOC
@@ -23,14 +24,14 @@ class Autotalk_Plugin(Plugin):
             )
 
 
-    def setup(self):
+    def setup(self, bot: Bot):
         self.database = DataBase(AUTOTALK_DB_PATH)
         self.database.tag_type[TAG_CONTENT] = Message
         self.next_happen_time = Autotalk_Plugin()._get_next()
-        super().setup()
+        super().setup(bot)
 
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text is not None:

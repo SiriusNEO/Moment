@@ -17,13 +17,8 @@ class Pixiv_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
 
-    def setup(self):
-        self.task_queue = []
-        self.task_lock = False
-        self.task_cnt = 0
-        super().setup()
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text is not None:
@@ -33,37 +28,10 @@ class Pixiv_Plugin(Plugin):
                 return Error("参数个数错误")
             
             if cmd_args[0] in FETCH_COMMAND:
-                # query with tag
-                self.task_lock = True
-                if len(cmd_args) == 2:
-                    self.task_queue.append([self.task_cnt, cmd_args[1]])
-                # no tag
-                else:
-                    self.task_queue.append([self.task_cnt])
-                self.task_cnt += 1
-                self.task_lock = False
-                return Message("正在获取ing, 别急")
-
-        return Error("命令不满足该插件")
-    
-
-    async def plugin_task(self, send_method):
-        
-        while True:
-            await asyncio.sleep(WAIT)
-
-            if self.banned:
-                self.task_queue = []
-                continue
-            
-            if not self.task_lock and len(self.task_queue) > 0:
-                task = self.task_queue[0]
-                self.task_queue.remove(task)
-
-                if len(task) == 1:
+                if len(cmd_args) == 1:
                     url = API_URL + "/?san={}".format(SAN)
                 else:
-                    url = API_URL + "/get/tags/{}?san={}".format(task[1], SAN)
+                    url = API_URL + "/get/tags/{}?san={}".format(cmd_args[1], SAN)
                 
                 timeout = aiohttp.ClientTimeout(total=TIMEOUT)
                 async with aiohttp.ClientSession(timeout=timeout) as session:
@@ -84,11 +52,13 @@ class Pixiv_Plugin(Plugin):
                                 reply = Message()
                                 reply.text = "[Moment Pixiv 图片服务]\nid: {}\n作者: {}({})\nurl: {}\ntags: {}\n\n".format(pic_id, author[1], author[0], pic_url, tags)
                                 reply.pic = Picture(pic_url, pic_path=pic_path)
-                                await send_method(reply)
+                                return reply
                             else:
-                                await send_method(Message("pixiv 服务获取图片时失败..."))
+                               return Error("pixiv 服务获取图片时失败...", urge=self.get_name())
                         else:
-                            await send_method(Message("pixiv 服务连接失败..."))
-                    except asyncio.TimeoutError:
-                        await send_method(Message("唔 网络连接挂掉啦, 连接超时"))
+                            return Error("pixiv 服务连接失败...", urge=self.get_name())
+                    except Exception as e:
+                        return Error("唔 发生奇怪错误: {}".format(e.args), urge=self.get_name())
+
+        return Error("命令不满足该插件")
                     

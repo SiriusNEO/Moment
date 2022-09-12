@@ -1,4 +1,5 @@
 from core.plugin import *
+from core.bot import Bot
 
 from plugins.sjtudoor.plugin_config import *
 from plugins.sjtudoor.plugin_doc import PLUGIN_DOC
@@ -23,7 +24,7 @@ class SJTUDoor_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
     
-    def setup(self):
+    def setup(self, bot: Bot):
         if not IMPORT_FLAG:
             raise Exception("开门插件缺少关键库: pysjtu")
 
@@ -33,9 +34,9 @@ class SJTUDoor_Plugin(Plugin):
             Log.info(self.jLock_mainfile_path)
             raise Exception("开门插件缺少放于同目录下的工具: jLock. 获取: https://github.com/cmd2001/jLock")
 
-        super().setup()
+        super().setup(bot)
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text is not None:

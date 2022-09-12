@@ -1,5 +1,5 @@
 from core.plugin import *
-from core.bot import Bot
+
 from plugins.word.plugin_config import *
 from plugins.word.plugin_doc import PLUGIN_DOC
 
@@ -17,7 +17,7 @@ class Word_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text is not None:

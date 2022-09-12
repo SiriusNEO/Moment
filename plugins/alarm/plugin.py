@@ -2,6 +2,7 @@ from plugins.alarm.plugin_doc import PLUGIN_DOC
 from plugins.alarm.plugin_config import *
 
 from core.plugin import *
+from core.bot import Bot
 
 from plugins.db.basic_db import DataBase
 from plugins.db.db_event import TagPair
@@ -23,14 +24,14 @@ class Alarm_Plugin(Plugin):
             )
     
 
-    def setup(self):
+    def setup(self, bot: Bot):
         self.database = DataBase(ALARM_DB_PATH)
         self.database.tag_type[TAG_AL] = Message
         self.database.tag_type[TAG_CONTENT] = Message
-        super().setup()
+        super().setup(bot)
 
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
         reply = Message()
 

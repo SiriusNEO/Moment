@@ -7,6 +7,7 @@ from plugins.db.plugin_doc import PLUGIN_DOC
 from core.error import Error
 
 from core.plugin import *
+from core.bot import Bot
 
 import time
 from utils.log import Log
@@ -22,16 +23,16 @@ class Database_Plugin(Plugin):
             )
 
 
-    def setup(self):
+    def setup(self, bot: Bot):
         self.database = DataBase(CM_PATH)
         self.database.tag_type["id"] = int
-        super().setup()
+        super().setup(bot)
 
         self.record_flag = False
         self.record_list = []
 
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text == RECORD_COMMAND:

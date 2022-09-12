@@ -117,6 +117,6 @@ async def group_message_listener(app: GraiaMiraiApplication,
 """
 bot.create_plugin_task(loop)
 
-Log.info("FrontEnd {} started.".format(PLATFORM))
+Log.info("FrontEnd {} 启动完成. {}({}) 正式开始工作.".format(PLATFORM, bot.name, PLATFORM))
 
 app.launch_blocking()

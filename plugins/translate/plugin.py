@@ -8,6 +8,7 @@ from plugins.translate.plugin_doc import PLUGIN_DOC
 from plugins.translate.plugin_config import *
 
 from core.plugin import *
+from core.bot import Bot
 
 class Translate_Plugin(Plugin):
 
@@ -19,13 +20,13 @@ class Translate_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
     
-    def setup(self):
+    def setup(self, bot: Bot):
         if not IMPORT_FLAG:
             raise Exception("翻译插件缺少关键库: googletrans")
-        super().setup()
+        super().setup(bot)
     
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.quote is None or message.quote.text is None:

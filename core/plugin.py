@@ -5,6 +5,8 @@ from core.message import Message
 from core.error import Error
 from typing import Union, List
 
+from utils.log import Log
+
 import asyncio
 
 class Plugin:
@@ -26,14 +28,14 @@ class Plugin:
     """
         Things that should be done when installing this plugin to bot
     """
-    def setup(self):
+    def setup(self, bot):
         self._setup_flag = True
-
+        Log.info("插件 {} 已植入Bot @{} 中.".format(self.get_name(), bot.name))
 
     """
         Message 2 Reply
     """
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         return Error("Unimplemented")
 
     """

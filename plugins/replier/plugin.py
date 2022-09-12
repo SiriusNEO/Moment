@@ -6,6 +6,7 @@ from plugins.replier.template_render import *
 from plugins.db.db_event import TagPair
 
 from core.plugin import *
+from core.bot import Bot
 
 from plugins.db.plugin_config import *
 
@@ -25,18 +26,19 @@ class Replier_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
 
-    def setup(self, database: DataBase):
-        database.tag_type[TAG_KEY] = list
-        database.tag_type[TAG_FULL] = list
-        database.tag_type[TAG_CM] = list
-        database.tag_type[TAG_ARGMAP] = dict
-        database.tag_type[TAG_POOL] = Message
-        database.tag_type[TAG_ACTIVE] = int
-        self.database = database
+    def setup(self, bot: Bot):
+        self.database = bot.require_info(plugin_name="Database", member_name="database")
+
+        self.database.tag_type[TAG_KEY] = list
+        self.database.tag_type[TAG_FULL] = list
+        self.database.tag_type[TAG_CM] = list
+        self.database.tag_type[TAG_ARGMAP] = dict
+        self.database.tag_type[TAG_POOL] = Message
+        self.database.tag_type[TAG_ACTIVE] = int
 
         self._timelock_dict = {}
         
-        super().setup()
+        super().setup(bot)
     
     # this will do some replace...
     def pool_pass(self, message_list: list):
@@ -76,7 +78,7 @@ class Replier_Plugin(Plugin):
         return ret
 
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         reply = Message()

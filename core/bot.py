@@ -17,13 +17,12 @@ class Bot:
         self.account = config.get("account", prefix=platform)
         self.roots = config.get("root-accounts", prefix=platform)
         self.platform = platform
-
         self.env = config.get("env")
+
         self.installed_plugins = []
         self.installed_plugins_name = []
-        
         self.name_2_plugin = {}
-
+        
         self._ban_list = []
         self._send_method = None
 
@@ -40,34 +39,43 @@ class Bot:
                 if install_list[i] not in name_2_plugin:
                     raise Exception("未知的插件名: {}".format(install_list[i]))
                 
-                plugin = name_2_plugin[install_list[i]]
-
-                if plugin.get_name() == "Help":
-                    self.install(plugin, self)
-                elif plugin.get_name() == "Database":
-                    self.install(plugin)
-                    database = plugin.database
-                elif plugin.get_name() == "Replier" or plugin.get_name() == "Star":
-                    self.install(plugin, database)
-                else:
-                    self.install(plugin)
+                if install_list[i] in self.installed_plugins_name:
+                    Log.warn("检测到重复插件, 将忽略第二次安装: {}".format(install_list[i]))
+                    continue
+                
+                self.install(name_2_plugin[install_list[i]])
     
     
     def register_send_method(self, send_method):
         if not callable(send_method):
-            raise Exception("register a not callable send_method")
-        Log.info("Method {} has been registered. It must be async.".format(send_method.__name__))
+            raise Exception("send_method 必须是一个 callable 对象")
+        Log.info("Method \"{}\" 成功被注册为 Moment 的发送方法 (It must be async)".format(send_method.__name__))
         self._send_method = send_method
+    
+
+    """
+        插件依赖. 
+        有时 B 插件需要 A 插件的信息, 在 setup 时由 B 插件向 A 插件发起一个 require_info
+    """
+    def require_info(self, plugin_name: str, member_name: str):
+        if plugin_name not in self.name_2_plugin:
+            raise Exception("require info error: 未预先被安装的目标插件: {}".format(plugin_name))
+        plugin = self.name_2_plugin[plugin_name]
+
+        if not hasattr(plugin, member_name):
+            raise Exception("require info error: 插件{}不含该数据成员: {}".format(plugin_name, member_name))
+
+        return getattr(plugin, member_name)    
 
 
-    def install(self, plugin: Plugin, *arg):
+    def install(self, plugin: Plugin):
         plugin_name = plugin.get_name()
 
         for requirement in plugin.requirements:
             if requirement not in self.installed_plugins_name:
                 raise Exception("Requirements of Plugin {} not installed, need: {}".format(plugin_name, requirement))
         
-        plugin.setup(*arg)
+        plugin.setup(self)
         plugin.roots = self.roots
 
         self.installed_plugins.append(plugin)
@@ -81,7 +89,7 @@ class Bot:
                 Log.info("{}: banned".format(plugin.get_name()))
                 continue
 
-            reply = plugin.handle_message(message)
+            reply = await plugin.handle_message(message)
             
             if isinstance(reply, Message) or isinstance(reply, list):
                 await self._send_method(reply)
@@ -98,10 +106,10 @@ class Bot:
 
 
     def create_plugin_task(self, loop):
-        Log.info("Starting Plugin tasks.")
-
         for plugin in self.installed_plugins:
             loop.create_task(plugin.plugin_task(self._send_method))
+        
+        Log.info("成功在事件循环中启动所有插件的 plugin_task")
 
 
     def is_banned(self, plugin_name: str) -> Optional[Error]:

@@ -1,4 +1,5 @@
 from core.plugin import *
+from core.bot import Bot
 
 from plugins.judge.plugin_config import *
 from plugins.judge.plugin_doc import PLUGIN_DOC
@@ -18,16 +19,16 @@ class Judge_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
 
-    def setup(self):
+    def setup(self, bot: Bot):
         self.database = DataBase(JUDGE_DB_PATH)
         self.database.tag_type[TAG_CONTENT] = Message
 
         self.start_flag = False
         self.judge_time = 0
         
-        super().setup()
+        super().setup(bot)
 
-    def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
+    async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
         if message.text is not None:
