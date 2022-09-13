@@ -1,4 +1,4 @@
-from plugins.ps.plugin import *
+from plugins.ps.plugin_config import *
 
 PLUGIN_DOC = """图片处理插件. 可以对图片做一些简单变换.
 

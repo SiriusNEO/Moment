@@ -1,4 +1,4 @@
-from plugins.pixiv.plugin import *
+from plugins.pixiv.plugin_config import *
 
 PLUGIN_DOC = """Pixiv 图片插件. 使用第三方API, 目前只支持来一张.
 
