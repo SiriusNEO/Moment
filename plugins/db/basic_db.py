@@ -81,7 +81,7 @@ class DataBase:
                         if type(content) != Message:
                             return Error("类型错误，对非信息关键词执行模糊匹配")
                         else: 
-                            if not (content.text is not None and index.val.text != "" and content.text.find(index.val.text) != -1):
+                            if not (index.val.text is not None and index.val.text != "" and content.text.find(index.val.text) != -1):
                                 match_flag = False
                                 break   
                      
@@ -121,7 +121,7 @@ class DataBase:
                         return Error("类型错误，对非信息类关键词执行模糊匹配")
                     else:
                         # 成功
-                        if line[index.tag].text != None and index.val.text != "" and line[index.tag].text.find(index.val.text) != -1:
+                        if index.val.text is not None and index.val.text != "" and line[index.tag].text.find(index.val.text) != -1:
                             match_flag = True
                         # 失败
                         else:
@@ -133,7 +133,7 @@ class DataBase:
                         return Error("类型错误，对非信息类关键词执行模糊匹配")
                     else:
                         # 成功
-                        if line[index.tag].text != None and line[index.tag].text != "" and index.val.text.find(line[index.tag].text) != -1:
+                        if line[index.tag].text is not None and line[index.tag].text != "" and index.val.text.find(line[index.tag].text) != -1:
                             match_flag = True
                         # 失败
                         else:

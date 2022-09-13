@@ -3,6 +3,7 @@
 """
 from core.message import Message
 from core.error import Error
+from core.user import User
 from typing import Union, List
 
 from utils.log import Log
@@ -18,6 +19,7 @@ class Plugin:
         self.doc = doc
         self._setup_flag = False
         self.banned = False
+        self._roots = []
     
     """
         Get the plugin name (class name)
@@ -31,6 +33,10 @@ class Plugin:
     def setup(self, bot):
         self._setup_flag = True
         Log.info("插件 {} 已植入Bot @{} 中.".format(self.get_name(), bot.name))
+    
+
+    def check_privilege(self, sender: User) -> bool:
+        return sender.uid in self._roots or sender.name in self._roots
 
     """
         Message 2 Reply

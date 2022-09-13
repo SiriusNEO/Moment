@@ -45,7 +45,7 @@ class Database_Plugin(Plugin):
                 return Message("得得")
 
         if message.text == COMMIT_COMMAND or message.text == BACKUP_COMMAND or message.text == RELOAD_COMMAND or message.text == ROLLBACK_COMMAND:
-            if message.sender not in self.roots:
+            if not self.check_privilege(message.sender):
                 return Error("权限不够", urge=self.get_name())
 
         event = database_cmd_parse(message)

@@ -14,8 +14,20 @@ class Bot:
 
     def __init__(self, platform: str, config: YamlConfig):
         self.name = config.get("name")
+        
         self.account = config.get("account", prefix=platform)
+        if isinstance(self.account, int):
+            self.account = str(self.account)
+
         self.roots = config.get("root-accounts", prefix=platform)
+        if self.roots is None:
+            self.roots = []
+        
+        # use str
+        for i in range(len(self.roots)):
+            if isinstance(self.roots[i], int):
+                self.roots[i] = str(self.roots[i])
+
         self.platform = platform
         self.env = config.get("env")
 
@@ -76,7 +88,7 @@ class Bot:
                 raise Exception("Requirements of Plugin {} not installed, need: {}".format(plugin_name, requirement))
         
         plugin.setup(self)
-        plugin.roots = self.roots
+        plugin._roots = self.roots
 
         self.installed_plugins.append(plugin)
         self.installed_plugins_name.append(plugin_name)

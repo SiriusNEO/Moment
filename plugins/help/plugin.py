@@ -69,7 +69,7 @@ class Help_Plugin(Plugin):
                     return reply
                 
                 elif cmd_args[0] == BAN_COMMAND or cmd_args[0] == UNBAN_COMMAND:
-                    if message.sender not in self.roots:
+                    if not self.check_privilege(message.sender):
                         return Error("权限不足!", urge=self.get_name())
                     if len(cmd_args) != 2:
                         return Error("参数个数错误!", urge=self.get_name())

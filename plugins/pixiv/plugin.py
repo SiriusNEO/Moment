@@ -1,4 +1,5 @@
 from core.plugin import *
+from core.bot import Bot
 
 from plugins.pixiv.plugin_config import *
 from plugins.pixiv.plugin_doc import PLUGIN_DOC

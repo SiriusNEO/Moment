@@ -47,10 +47,10 @@ class SJTUDoor_Plugin(Plugin):
             if message.text in OPENDOOR_WORDS:
                 self.task_lock = True
                 
-                if message.sender not in DORMITORY_MEMBERS_MAP:
-                    opener = "宿舍外人员"
+                if message.sender.uid not in DORMITORY_MEMBERS_MAP:
+                    opener = "宿舍外人员{}".format(message.sender.name)
                 else:
-                    opener = DORMITORY_MEMBERS_MAP[message.sender]
+                    opener = DORMITORY_MEMBERS_MAP[message.sender.uid]
                     self.task_queue.append(opener)
 
                 self.task_lock = False

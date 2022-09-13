@@ -9,8 +9,8 @@ class Message:
         text:       str
         pic:        Picture
         quote:      Message
-        at:         int
-        sender:     int
+        at:         User
+        sender:     User
     """
     def __init__(self, text = None):
         
@@ -36,6 +36,8 @@ class Message:
         
         if self.at != other.at:
             return False
+
+        # without sender
 
         return True
     
@@ -80,10 +82,10 @@ class Message:
         print("[moment message] ", self)
 
         if self.text != None:
-            print("   > it has text = ", self.text)
+            print("   > it has text =", self.text)
 
         if self.pic != None:
-            print("   > it has pic, url = ", self.pic.pic_url)
+            print("   > it has pic, url =", self.pic.pic_url)
 
         if self.quote != None:
             print("   > it has quote. show its quote now.\n")

@@ -1,4 +1,5 @@
 SEND_WAIT = 1
+TIMEOUT = 60
 
 """
     pass global yaml config

@@ -1,6 +1,10 @@
 from core.message import Message
 from core.image import *
+from core.user import User
 from core.core_config import LOCAL_FILE_URL
+
+from utils.log import Log
+
 from graia.application.message.chain import MessageChain
 from graia.application import GraiaMiraiApplication
 from graia.application.message.elements.internal import Plain, Image, Quote, At, Source
@@ -16,7 +20,8 @@ async def graia2moment(app: GraiaMiraiApplication,
     
     message = Message()
 
-    message.sender = sender
+    member_info = await app.getMemberInfo(sender, CONFIG.get("working-group", prefix="graia-v4"))
+    message.sender = User(str(sender), member_info.name)
 
     if graia_chain.has(Plain):
         message.text = graia_chain.get(Plain)[0].asDisplay().strip(' ')
@@ -34,12 +39,13 @@ async def graia2moment(app: GraiaMiraiApplication,
         try:
             quote_message = await app.messageFromId(quote_id)
         except:
+            Log.error("v4 get quote error")
             pass
         else:
             message.quote = await graia2moment(app, quote_message.messageChain, quote_message.sender)
     
     if graia_chain.has(At):
-        message.at = graia_chain.get(At)[0].target
+        message.at = User(str(graia_chain.get(At)[0].target), "")
     
     return message
 
@@ -52,7 +58,7 @@ async def moment2graia(app: GraiaMiraiApplication, message: Message) -> MessageC
     if message.at is not None:
         # At fails in this version
         # chain_list.append(At(message.at)) 
-        member_info = await app.getMemberInfo(message.at, CONFIG.get("working-group", prefix="graia-v4"))
+        member_info = await app.getMemberInfo(message.at.uid, CONFIG.get("working-group", prefix="graia-v4"))
         chain_list.append(Plain("@" + member_info.name + " "))
 
     if message.text != None:

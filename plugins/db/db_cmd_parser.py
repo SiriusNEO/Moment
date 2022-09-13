@@ -1,6 +1,7 @@
 from core.message import Message
 from plugins.db.db_event import *
 from plugins.db.plugin_config import *
+from utils.log import Log
 
 import re
 
@@ -181,6 +182,8 @@ def get_event(text: str):
     return None: parse failed, not a valid database command
 """
 def database_cmd_parse(raw: Message):
+    Log.info(raw)
+
     if raw.text != None:
         if raw.text == COMMIT_COMMAND:
             return CommitEvent()

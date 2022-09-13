@@ -13,7 +13,7 @@ if len(sys.argv) <= 1:
 yaml_path = sys.argv[1]
 
 # support platforms
-SUPPORT_PLATFORMS = ["graia-v4"]
+SUPPORT_PLATFORMS = ["graia-v4", "aiocqhttp"]
 
 try:
     with open(yaml_path, 'r', encoding="utf-8") as fp:
@@ -74,4 +74,6 @@ CONFIG.put("prepared_plugins",
 ])
 
 if CONFIG.get("platform") == "graia-v4":
-    import frontend.graia_v4.graia_launcher
+    import frontend.graia_v4.launcher
+elif CONFIG.get("platform") == "aiocqhttp":
+    import frontend.aiocqhttp.launcher
