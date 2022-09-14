@@ -66,7 +66,7 @@ bot = Bot(platform=PLATFORM, config=CONFIG)
 """
 
 api_root = None
-if CONFIG.is_in("api-root", prefix=PLATFORM)
+if CONFIG.is_in("api-root", prefix=PLATFORM):
     api_root = CONFIG.get("api-root", prefix=PLATFORM)
     if api_root == "":
         api_root = None
