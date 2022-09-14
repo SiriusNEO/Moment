@@ -8,7 +8,7 @@
 
 > Capture every beautiful MOMENT in life
 
-Moment 是一个与框架低耦合的、多功能的多平台聊天机器人。
+Moment 是一个与框架低耦合的、多功能的多平台聊天机器人。[使用文档](http://192.144.230.76:9000/docs/)
 
 </div>
 
@@ -16,9 +16,19 @@ Moment 是一个与框架低耦合的、多功能的多平台聊天机器人。
 
 该项目仍在开发中，功能与 api 可能会发生变动且可能存在一些测试未发现的 bug。
 
+## 支持的对接平台
+
+| 框架                                                         | 聊天平台    | 备注                                                         |
+| ------------------------------------------------------------ | ----------- | ------------------------------------------------------------ |
+| -                                                            | Linux Shell | 即通过 shell 与 Moment 交互，聊天规则见文档。                |
+| [GraiaApplication](https://github.com/GraiaProject/Application) | QQ          | Graia 系框架的 v4。目前已停止维护，但仍然可用。基于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)。 |
+| [aiocqhttp](https://github.com/nonebot/aiocqhttp)            | QQ          | [nonebot](https://github.com/nonebot/nonebot) 的内部SDK，基于 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)。 |
+
+
+
 ## 特点
 
-- 轻量易部署。Moment 在开发过程中努力做到将依赖降到最低。如果你不使用一些插件，你只需要安装一个机器人框架库即可启动！
+- 轻量易部署。Moment 在开发过程中努力做到将依赖降到最低，最大可能消除各种包的版本管理问题。
 
 - 与框架低耦合。Moment 的设计理念就是为了能够方便对接各个聊天平台，因此它在设计上将框架（被 FrontEnd，也即前端部分处理）功能（统一称作 Plugin）分离。迁移平台时，只需要写好对应的 FrontEnd 即可轻松对接。
 
@@ -44,7 +54,7 @@ Moment 是一个与框架低耦合的、多功能的多平台聊天机器人。
 
 ## 部署 Moment
 
-- Step 1：配置好前端。一般的框架都会有成熟的配置教程。
+- Step 1：配置好前端框架。一般的框架都会有成熟的配置教程。
 
 - Step 2：将模板配置文件（`template.yml`）中相关信息改成自己机器人账户的信息。
 
@@ -95,9 +105,12 @@ help
 感谢这些项目，没有它们就没有 Moment。
 
 - [mirai](https://github.com/mamoe/mirai) 高效率 QQ 机器人支持库
+- [mirai-api-http](https://github.com/project-mirai/mirai-api-http)  Mirai HTTP API (console) plugin
 - [GraiaApplication](https://github.com/GraiaProject/Application)  基于 mirai-api-http 的 Python 框架
 - [ABot-Graia](https://github.com/djkcyl/ABot-Graia)  借用了 Pixiv 的 api 
 - [jLock](https://github.com/cmd2001/jLock)  用于编写 SJTUDoor 插件
+- [aiocqhttp](https://github.com/nonebot/aiocqhttp)  A Python SDK with async I/O for CQHTTP (OneBot).
+- [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)  cqhttp的golang实现，轻量、原生跨平台.
 
 
 

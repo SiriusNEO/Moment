@@ -16,5 +16,5 @@ process.py
 config-*
 plugins/sjtudoor/jLock/*
 jLock_venv/
-last_*
+*.txt
 nohup.out
