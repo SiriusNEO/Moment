@@ -72,7 +72,7 @@ class Alarm_Plugin(Plugin):
         return Error("命令格式不符此插件!")
     
 
-    async def plugin_task(self, send_method):
+    async def plugin_task(self):
         while True:
             await asyncio.sleep(WAIT)
             
@@ -88,6 +88,6 @@ class Alarm_Plugin(Plugin):
                 
                 if isinstance(lines, list) and len(lines) > 0:
                     report_line = random.choice(lines)
-                    await send_method(report_line[TAG_CONTENT])
+                    await self.send(report_line[TAG_CONTENT])
 
 

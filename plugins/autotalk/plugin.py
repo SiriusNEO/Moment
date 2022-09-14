@@ -49,7 +49,7 @@ class Autotalk_Plugin(Plugin):
         return Error("命令不满足该插件")
     
 
-    async def plugin_task(self, send_method):
+    async def plugin_task(self):
         while True:
             await asyncio.sleep(WAIT)
 
@@ -69,7 +69,7 @@ class Autotalk_Plugin(Plugin):
                 self.next_happen_time = Autotalk_Plugin()._get_next()
             if now_time_local.tm_hour >= 12 and now_time_local.tm_hour <= 24 and now_time_local.tm_sec == 0:
                 if self.next_happen_time <= now_time:
-                    await send_method(random.choice(self.database.storage)[TAG_CONTENT])
+                    await self.send(random.choice(self.database.storage)[TAG_CONTENT])
                     self.next_happen_time = Autotalk_Plugin()._get_next()
     
     @staticmethod

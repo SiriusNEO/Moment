@@ -13,3 +13,7 @@ class User:
     def __init__(self, uid = "", name = ""):
         self.uid = uid
         self.name = name
+
+    
+    def __eq__(self, other: "User"):
+        return self.uid == other.uid

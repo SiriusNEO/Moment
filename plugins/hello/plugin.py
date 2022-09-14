@@ -16,10 +16,10 @@ class Hello_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
     
-    async def plugin_task(self, send_method):
+    async def plugin_task(self):
         await asyncio.sleep(START_WAIT)
 
-        await send_method(Message(HELLO_WORD))
+        await self.send(HELLO_WORD)
 
         while True:
             await asyncio.sleep(WAIT)
@@ -30,10 +30,10 @@ class Hello_Plugin(Plugin):
             # Log.info("{} Working".format(self.get_name()))
 
             now_datetime = datetime.datetime.now()
-            await Hello_Plugin._report_time(send_method, now_datetime)
+            await self._report_time(now_datetime)
     
-    @staticmethod
-    async def _report_time(send_method, now_datetime):
+    
+    async def _report_time(self, now_datetime):
         if now_datetime.minute != 0 or now_datetime.second != 0 or (3 <= now_datetime.hour <= 6):
             return
 
@@ -48,4 +48,4 @@ class Hello_Plugin(Plugin):
             # 早安
             reply.text += "\n" + GOOD_MORNING + str(now_datetime.month) + "月" + str(now_datetime.day) + "号，" + WEEKDAY_NAME[now_datetime.weekday()] + "~"
 
-        await send_method(reply)
+        await self.send(reply)

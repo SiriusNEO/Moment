@@ -24,11 +24,13 @@ class PS_Plugin(Plugin):
                 info = "云图片处理插件",
                 doc = PLUGIN_DOC
             )
+    
 
     def setup(self, bot: Bot):
         if not IMPORT_FLAG:
             raise Exception("ps插件缺少关键库: Pillow")
         super().setup(bot)
+    
 
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag

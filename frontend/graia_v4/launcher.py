@@ -53,7 +53,7 @@ CONFIG_TEMPLATE = """graia-v4:
 if not checkPassed:
     Log.error("Platform {} 配置文件格式错误! 请保证配置文件中如下字段均正确填写:".format(PLATFORM))
     print(CONFIG_TEMPLATE)
-    exit(1)
+    raise Exception("config check error")
 else:
     Log.info("配置对接 {} 成功! 检测到机器人账号: {}".format(PLATFORM, CONFIG.get("account", prefix=PLATFORM)))
 

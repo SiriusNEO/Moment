@@ -157,7 +157,7 @@ class Database_Plugin(Plugin):
         return reply
 
 
-    async def plugin_task(self, send_method):
+    async def plugin_task(self):
         while True:
             await asyncio.sleep(WAIT)
             
@@ -171,7 +171,7 @@ class Database_Plugin(Plugin):
             # 自动保存
             if now_time_local.tm_hour in AUTO_SAVE_TIME and now_time_local.tm_min == 42:
                 self.database.write_back()
-                await send_method(Message("[{}]({}) 自动存档完成, 数据与云端同步.".format(self.get_name(), Log.show_time())))
+                await self.send("[{}]({}) 自动存档完成, 数据与云端同步.".format(self.get_name(), Log.show_time()))
 
 
     """

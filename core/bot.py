@@ -38,24 +38,31 @@ class Bot:
         self._ban_list = []
         self._send_method = None
 
-        prepared_plugins = config.get("prepared_plugins")
+        if config.is_in("preloaded_plugins"):
+            preloaded_plugins = config.get("preloaded_plugins")
+            if preloaded_plugins is None:
+                preloaded_plugins = []
+        else:
+            preloaded_plugins = []
 
-        if config.is_in("plugins"):
-            name_2_plugin = {}
+        if config.is_in("plugins") and len(preloaded_plugins) > 0:
+            name_2_preloaded_plugin = {}
 
-            for i in range(len(prepared_plugins)):
-                name_2_plugin[prepared_plugins[i].get_name()] = prepared_plugins[i]
+            for i in range(len(preloaded_plugins)):
+                name_2_preloaded_plugin[preloaded_plugins[i].get_name()] = preloaded_plugins[i]
 
             install_list = config.get("plugins")
             for i in range(len(install_list)):
-                if install_list[i] not in name_2_plugin:
+                if install_list[i] not in name_2_preloaded_plugin:
                     raise Exception("未知的插件名: {}".format(install_list[i]))
                 
                 if install_list[i] in self.installed_plugins_name:
                     Log.warn("检测到重复插件, 将忽略第二次安装: {}".format(install_list[i]))
                     continue
                 
-                self.install(name_2_plugin[install_list[i]])
+                self.install(name_2_preloaded_plugin[install_list[i]])
+        else:
+            Log.warn("缺少 preloaded_plugins, 将不会按配置载入 plugin")
     
     
     def register_send_method(self, send_method):
@@ -63,6 +70,8 @@ class Bot:
             raise Exception("send_method 必须是一个 callable 对象")
         Log.info("Method \"{}\" 成功被注册为 Moment 的发送方法 (It must be async)".format(send_method.__name__))
         self._send_method = send_method
+        for plugin in self.installed_plugins:
+            plugin._send_method = send_method
     
 
     """
@@ -89,6 +98,7 @@ class Bot:
         
         plugin.setup(self)
         plugin._roots = self.roots
+        plugin._send_method = self._send_method
 
         self.installed_plugins.append(plugin)
         self.installed_plugins_name.append(plugin_name)
@@ -97,29 +107,36 @@ class Bot:
 
     async def handle_message(self, message: Message):
         for plugin in self.installed_plugins:
+            if plugin.wait_msg_flag:
+                plugin.received_queue.put(message)
+
+        # plugin.handle_message for not-wait plugin
+        # if a plugin is triggered, interrupt.
+        for plugin in self.installed_plugins:
             if plugin in self._ban_list:
                 Log.info("{}: banned".format(plugin.get_name()))
                 continue
 
-            reply = await plugin.handle_message(message)
+            if not plugin.wait_msg_flag:
+                reply = await plugin.handle_message(message)
             
-            if isinstance(reply, Message) or isinstance(reply, list):
-                await self._send_method(reply)
-                return
-            else:
-                assert isinstance(reply, Error)
-                if reply.urge is not None:
-                    reply_error = Message()
-                    reply_error.text = "{}: {}".format(reply.urge, reply.what)
-                    await self._send_method(reply_error)
+                if isinstance(reply, Message) or isinstance(reply, list):
+                    await self._send_method(reply)
                     return
                 else:
-                    Log.info("<{}>: ".format(plugin.get_name()), reply.what)
+                    assert isinstance(reply, Error)
+                    if reply.urge is not None:
+                        reply_error = Message()
+                        reply_error.text = "{}: {}".format(reply.urge, reply.what)
+                        await self._send_method(reply_error)
+                        return
+                    else:
+                        Log.info("<{}>: ".format(plugin.get_name()), reply.what)
 
 
     def create_plugin_task(self, loop):
         for plugin in self.installed_plugins:
-            loop.create_task(plugin.plugin_task(self._send_method))
+            loop.create_task(plugin.plugin_task())
         
         Log.info("成功在事件循环中启动所有插件的 plugin_task")
 

@@ -6,16 +6,17 @@ import ast
 """
 class AutoPluginLoader:
     """
-        loaded_plugins: List[Plugin]
+        preloaded_plugins: List[Plugin]
     """
 
     def __init__(self, plugin_dir: str):
-        self.loaded_plugins = []
+        self.preloaded_plugins = []
         _increment = 0
 
         if not os.path.exists(plugin_dir):
             raise Exception("auto_plugin_loader error: plugin dir not exist")
         
+        # black magic
         for root, dirs, files in os.walk(plugin_dir):
             for single_file in files:
                 if single_file.endswith(".py"):
@@ -27,5 +28,5 @@ class AutoPluginLoader:
                             # [-3] for ".py"
                             exec("from {} import {}".format(import_path.replace('/', '.')[:-3], plugin_class_name))
                             exec("plugin_{} = {}()".format(str(_increment), plugin_class_name))
-                            exec("self.loaded_plugins.append(plugin_{})".format(str(_increment)))
+                            exec("self.preloaded_plugins.append(plugin_{})".format(str(_increment)))
                             _increment += 1
