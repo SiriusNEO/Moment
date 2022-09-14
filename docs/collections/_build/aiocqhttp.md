@@ -18,31 +18,31 @@ nav_order: 1
 
 ### 2.2 配置 go-cqhttp 向 aiocqhttp 的连接
 
-这里有两种方法：反向 WebSocket 或者 HTTP。
+这里有两种方法：反向 WebSocket 或者 HTTP。配置可以参考 [aiocqhttp 文档](https://aiocqhttp.nonebot.dev/#/getting-started) 。
 
-## 编辑 Moment 配置文件
+## 3. 编辑 Moment 配置文件
 
-修改 Moment 提供的 `template.yml` 文件为自己的配置文件。
+修改 Moment 提供的 `template-aiocqhttp.yml` 文件为自己的配置文件。
 
 ```yaml
 # Moment user config template
 
 name:
-    Moment
+    moment-aiocqhttp-test
 
 env:
     CentOS
 
 platform:
-    graia-v4
+    aiocqhttp
 
-graia-v4:
-    host:          # mirai 的地址
+aiocqhttp:
+    api-root:
+        cqhttp host+port  # 若使用反向websocket, 无需此项. 否则若使用http, 填写cqhttp的host+post
+    host:          # aiocqhttp server 的地址
         your-host
-    port:          # mirai 的端口号
+    port:          # aiocqhttp server 的端口号
         your-port
-    author-key:    # mah 的 author key
-        your-author-key
     account:       # 机器人qq号
         your-account
     root-accounts: #可以对机器人发送更高命令的用户的qq号
@@ -50,25 +50,17 @@ graia-v4:
         - root2
     working-group: # 工作的群聊
         your-working-qq-group
+
+plugins: # 想要开启的插件
+    - Help
 ```
 
-主要修改部分为 `graia-v4` 开头的部分，涉及到 Moment 能否正常使用。其它信息仅作参考。
+主要修改部分为 `aiocqhttp` 开头的部分，涉及到 Moment 能否正常使用。其它信息仅作参考。
+
+注意 `go-cqhttp` 与 `aiocqhttp` 使用的是反向 WebSocket 还是 HTTP，这涉及到 `api-root`  这一项是否需要填写。
 
 
 
-## 第一次启动
+## 4. 测试
 
-在命令行显式启动 Moment：
-
-```bash
-python3 run.py <你的配置文件路径>
-```
-
-若你直接在 `template.yml` 上修改，你可以直接
-
-```
-python3 run.py template.yml
-```
-
-如果配置文件有误，程序会报错并中断。这时请仔细查看报错信息并改正。若成功启动，程序会报出一些调试信息并在命令行阻塞，期间机器人所在群聊的消息也会被转发到终端上予以显示。
-
+在你的 QQ 群发送 `ping`，查看是否回复。

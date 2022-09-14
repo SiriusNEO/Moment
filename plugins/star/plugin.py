@@ -40,10 +40,9 @@ class Star_Plugin(Plugin):
         self.database.tag_type[TAG_STAR] = Message
         super().setup(bot)
     
-
+    
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         if message.text is not None:
             cmd_args = message.text.split(" ")
 

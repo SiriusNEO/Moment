@@ -31,8 +31,8 @@ class Alarm_Plugin(Plugin):
         super().setup(bot)
 
 
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
         reply = Message()
 
         if message.text is not None:
@@ -71,7 +71,7 @@ class Alarm_Plugin(Plugin):
 
         return Error("命令格式不符此插件!")
     
-
+    @check_setup
     async def plugin_task(self):
         while True:
             await asyncio.sleep(WAIT)

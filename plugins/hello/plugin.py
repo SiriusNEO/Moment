@@ -16,6 +16,7 @@ class Hello_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
     
+    @check_setup
     async def plugin_task(self):
         await asyncio.sleep(START_WAIT)
 

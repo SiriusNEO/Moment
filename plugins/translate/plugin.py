@@ -25,10 +25,8 @@ class Translate_Plugin(Plugin):
             raise Exception("翻译插件缺少关键库: googletrans")
         super().setup(bot)
     
-
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         if message.quote is None or message.quote.text is None:
             return Error("缺少引用的内容")
 

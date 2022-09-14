@@ -28,9 +28,9 @@ class Judge_Plugin(Plugin):
         
         super().setup(bot)
 
+    
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         if message.text is not None:
             if message.text == ADD_COMMAND:
                 if message.quote is None:

@@ -30,10 +30,8 @@ class Autotalk_Plugin(Plugin):
         self.next_happen_time = Autotalk_Plugin()._get_next()
         super().setup(bot)
 
-
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         if message.text is not None:
             if message.text == ADD_COMMAND:
                 if message.quote is None:
@@ -48,7 +46,7 @@ class Autotalk_Plugin(Plugin):
 
         return Error("命令不满足该插件")
     
-
+    @check_setup
     async def plugin_task(self):
         while True:
             await asyncio.sleep(WAIT)

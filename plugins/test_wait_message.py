@@ -16,10 +16,8 @@ class Test_Plugin(Plugin):
         self.bot = bot
         super().setup(bot)
     
-
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         if message.text is not None and message.text == "第一句话":
             await self.send("说第二句话")
             await self.wait_message(checker=(lambda x: x.text=="第二句话"))

@@ -15,10 +15,8 @@ class Touhou_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
 
-
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         if message.text is not None:
             reply = Message()
 
