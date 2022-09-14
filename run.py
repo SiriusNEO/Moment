@@ -23,3 +23,5 @@ if CONFIG.get("platform") == "graia-v4":
     import frontend.graia_v4.launcher
 elif CONFIG.get("platform") == "aiocqhttp":
     import frontend.aiocqhttp.launcher
+elif CONFIG.get("platform") == "shell":
+    import frontend.shell.launcher

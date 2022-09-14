@@ -81,8 +81,6 @@ class Replier_Plugin(Plugin):
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
         assert self._setup_flag
 
-        reply = Message()
-
         # template detect
         template_detect = message.text is not None and message.text.find(TEMPLATE_BRACKET[0]) != -1
         if template_detect:
@@ -109,8 +107,7 @@ class Replier_Plugin(Plugin):
                     full_tp = TagPair(TAG_FULL, Message(cmd_args[2]), 0)
                     self.database.modify([key_tp], [], WORD_DEL)
                     self.database.modify([full_tp], [], WORD_DEL)
-                    reply.text = "删除成功!"
-                    return reply
+                    return Message("删除成功!")
                 else:
                     if len(cmd_args) == 3:
                         if cmd_args[2] not in [TAG_KEY, TAG_FULL]:
@@ -141,9 +138,8 @@ class Replier_Plugin(Plugin):
                         if isinstance(error, Error):
                             return error
                         
-                        reply.text = "添加成功!"
-                        return reply
-
+                        return Message("添加成功!")
+                        
         # reply
         key_tp = TagPair(TAG_KEY, message, 4)
         full_tp = TagPair(TAG_FULL, message, 0)

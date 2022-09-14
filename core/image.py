@@ -11,7 +11,9 @@ from utils.rand_tool import random_str
 """
 def load_image(path: str) -> bytes:
     fp = open(path, "rb")
-    return bytes(fp.read())
+    ret = bytes(fp.read())
+    fp.close()
+    return ret
 
 
 """

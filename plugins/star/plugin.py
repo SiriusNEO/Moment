@@ -132,7 +132,13 @@ class Star_Plugin(Plugin):
                 else:
                     star_time = cmd_args[2]
 
-        
+                error = self.database.new([TagPair(TAG_STAR, Message("{}({})".format(star_author, star_time)), 0), TagPair(TAG_CM, message.quote, 0)])
+
+                if isinstance(error, Error):
+                    return error
+                        
+                return Message("设精成功!")
+
         return Error("命令格式不符此插件!")
     
     @staticmethod

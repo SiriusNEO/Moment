@@ -3,7 +3,7 @@ SEND_WAIT = 1
 TIMEOUT = 60
 
 # support platforms
-SUPPORT_PLATFORMS = ["graia-v4", "aiocqhttp"]
+SUPPORT_PLATFORMS = ["graia-v4", "aiocqhttp", "shell"]
 
 DEFAULT_NAME = "moment"
 DEFAULT_ENV  = "unknown"
