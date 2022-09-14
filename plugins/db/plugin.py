@@ -5,7 +5,7 @@ from plugins.db.db_event import *
 from plugins.db.plugin_doc import PLUGIN_DOC
 
 from core.error import Error
-
+from core.user import User
 from core.plugin import *
 from core.bot import Bot
 
@@ -26,6 +26,9 @@ class Database_Plugin(Plugin):
     def setup(self, bot: Bot):
         self.database = DataBase(CM_PATH)
         self.database.tag_type["id"] = int
+        self.database.tag_type["info"] = Message
+        self.database.tag_type["shadow_code"] = int
+
         super().setup(bot)
 
         self.record_flag = False
@@ -68,16 +71,16 @@ class Database_Plugin(Plugin):
         if hasattr(event, 'indices'):
             for index in event.indices:
                 if index.tag not in self.database.tag_type:
-                    return Error("标签不存在: {}".format(index.tag))
-                error = self._val_resolve(index, event)
+                    return Error("未被允许的 tag: {}".format(index.tag), urge=self.get_name())
+                error = await self._val_resolve(index, event, message.sender)
                 if error != None:
                     return error
         
         if hasattr(event, 'modifies'):
             for modify in event.modifies:
                 if modify.tag not in self.database.tag_type:
-                    return Error("标签不存在: {}".format(modify.tag))
-                error = self._val_resolve(modify, event)
+                    return Error("未被允许的 tag: {}".format(modify.tag), urge=self.get_name())
+                error = await self._val_resolve(modify, event, message.sender)
                 if error != None:
                     return error
         # 0 query
@@ -233,12 +236,22 @@ class Database_Plugin(Plugin):
         val_resolve: 解析 tag_pair 的 val 并赋予真实值
         真实值只能是 Message, int, float 三种类型之一
     """
-    def _val_resolve(self, tag_pair: TagPair, event: BaseDatabaseEvent):
+    async def _val_resolve(self, tag_pair: TagPair, event: BaseDatabaseEvent, sender: User):
         if self.database.tag_type[tag_pair.tag] == list or self.database.tag_type[tag_pair.tag] == Message:
             if tag_pair.val == THIS:
                 if event.quote is None:
                     return Error("无引用的内容！", urge=self.get_name())
                 tag_pair.val = event.quote
+            elif tag_pair.val == SPLIT_THIS:
+                if event.quote is None:
+                    return Error("无引用的内容！", urge=self.get_name())
+                tag_pair.val = []
+                raw = event.quote.text
+                if raw is not None:
+                    raw_split = raw.split(" ")
+                    for raw_split_single in raw_split:
+                        tag_pair.val.append(Message(raw_split_single))
+
             elif tag_pair.val == ABOVE:
                 if self.database.tag_type[tag_pair.tag] != list:
                     return Error("字段 {} 类型不是 List[Message]".format(tag_pair.tag), urge=self.get_name())
@@ -247,6 +260,9 @@ class Database_Plugin(Plugin):
 
                 self.record_list = []
                 self.record_flag = False
+            elif tag_pair.val == NEXT:
+                await self.send("请输入{}的对应信息: ".format(NEXT))
+                tag_pair.val = await self.wait_message(for_sender=sender)
             else:
                 text = tag_pair.val
                 tag_pair.val = Message(text)

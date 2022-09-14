@@ -9,6 +9,8 @@ AVATAR_COMMAND = "stavatar"
 AVATAR_DIR = "avatar/"
 AVATAR_FORMAT = ".jpg"
 
+DATE_FORMAT = "%Y-%m-%d"
+
 STAR_REGEX = "^\S+\(\S+\)$"
 
 PLUGIN_PATH = "plugins/star/"

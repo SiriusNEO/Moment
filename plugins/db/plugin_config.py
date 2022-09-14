@@ -50,6 +50,8 @@ ID = "id"
 
 THIS = "%this"
 ABOVE  = "%above"
+NEXT = "%next"
+SPLIT_THIS = "%split"
 
 WAIT = 60
 

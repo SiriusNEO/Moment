@@ -81,7 +81,7 @@ class SJTUDoor_Plugin(Plugin):
             now_time = time.time()
             if now_time - self.last_refresh_time > EXPIRE_TIME:
                 self.last_refresh_time = now_time
-                await self.send("session 过期 (有效时间{}秒), 尝试刷新".format(EXPIRE_TIME))
+                # await self.send("session 过期 (有效时间{}秒), 尝试刷新".format(EXPIRE_TIME))
                 try:
                     os.system(UNSET_PROXIES)
                     self.change_cwd()

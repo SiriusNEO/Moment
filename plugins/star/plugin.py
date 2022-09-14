@@ -22,6 +22,7 @@ from plugins.db.db_event import TagPair
 import re
 import os
 import random
+import datetime
 
 class Star_Plugin(Plugin):
 
@@ -117,6 +118,20 @@ class Star_Plugin(Plugin):
                 
                 save_image(message.quote.pic.pic_bytes, file_name=AVATAR_DIR + cmd_args[1] + AVATAR_FORMAT)
                 return Message("头像上传成功!")
+            
+            elif cmd_args[0] == TAG_STAR:
+                if len(cmd_args) < 2 or len(cmd_args) > 3:
+                    return Error("参数个数不对!", urge=self.get_name())
+                
+                if message.quote is None:
+                    return Error("制作精选评论缺少引用!", urge=self.get_name())
+                
+                star_author = cmd_args[1]
+                if len(cmd_args) == 2:
+                    star_time = datetime.datetime.now().strftime(DATE_FORMAT)
+                else:
+                    star_time = cmd_args[2]
+
         
         return Error("命令格式不符此插件!")
     

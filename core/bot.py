@@ -123,8 +123,7 @@ class Bot:
                 if isinstance(reply, Message) or isinstance(reply, list):
                     await self._send_method(reply)
                     return
-                else:
-                    assert isinstance(reply, Error)
+                elif isinstance(reply, Error):
                     if reply.urge is not None:
                         reply_error = Message()
                         reply_error.text = "{}: {}".format(reply.urge, reply.what)
@@ -132,6 +131,9 @@ class Bot:
                         return
                     else:
                         Log.info("<{}>: ".format(plugin.get_name()), reply.what)
+                else:
+                    # probably None
+                    Log.info("<{}>: ".format(plugin.get_name()), reply)
 
 
     def create_plugin_task(self, loop):

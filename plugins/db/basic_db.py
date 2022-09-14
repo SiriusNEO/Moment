@@ -66,8 +66,19 @@ class DataBase:
 
             match_flag = None
 
+            # 如果是当前未安装plugin定义的tag, 不查询
+            if index.tag not in self.tag_type:
+                match_flag = False
+            
+            for line_tag in line:
+                if line_tag not in self.tag_type:
+                    match_flag = False
+                    break
+
+            if match_flag is not None:
+                pass
             # 如果是多关键词, 需要匹配所有词
-            if self.tag_type[index.tag] == list:
+            elif self.tag_type[index.tag] == list:
                 match_flag = True
                 for content in line[index.tag]:    
                     # 完全匹配
@@ -218,7 +229,14 @@ class DataBase:
 
         # [] 判断
         if len(indices) == 0:
-            lines = self.storage[:]
+            for line in self.storage:
+                flag = True
+                for line_tag in line:
+                    if line_tag not in self.tag_type:
+                        flag = False
+                        break
+                if flag:
+                    lines.append(line)
         else:
             for i in range(len(indices)):
                 error = self._single_query(indices[i], lines, (i == 0))
