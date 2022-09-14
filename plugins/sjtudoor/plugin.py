@@ -41,10 +41,8 @@ class SJTUDoor_Plugin(Plugin):
         self.last_refresh_time = time.time()
         self.cur_cwd = os.getcwd()
 
-
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         if message.text is not None:
             if message.text in OPENDOOR_WORDS:
                 
@@ -70,10 +68,8 @@ class SJTUDoor_Plugin(Plugin):
 
         return Error("命令不满足该插件")
     
-
+    @check_setup
     async def plugin_task(self):
-        assert self._setup_flag
-
         while True:
             await asyncio.sleep(WAIT)
 

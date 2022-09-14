@@ -13,6 +13,15 @@ import asyncio
 from core.core_config import MSG_WAIT_GAP
 
 import queue
+import functools
+
+def check_setup(method):
+    @functools.wraps(method)
+    async def wrapper(self, *args, **kwargs):
+        if not self._setup_flag:
+            raise Exception("执行了未安装的插件: {}".format(self.get_name()))
+        return await method(self, *args, **kwargs)
+    return wrapper
 
 class Plugin:
 
@@ -92,4 +101,3 @@ class Plugin:
     """
     async def plugin_task(self):
         pass
-    

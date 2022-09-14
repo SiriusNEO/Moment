@@ -34,10 +34,9 @@ class Database_Plugin(Plugin):
         self.record_flag = False
         self.record_list = []
 
-
+    
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         if message.text == RECORD_COMMAND:
             if self.record_flag:
                 self.record_flag = False
@@ -159,7 +158,7 @@ class Database_Plugin(Plugin):
 
         return reply
 
-
+    @check_setup
     async def plugin_task(self):
         while True:
             await asyncio.sleep(WAIT)

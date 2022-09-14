@@ -77,10 +77,8 @@ class Replier_Plugin(Plugin):
         
         return ret
 
-
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         # template detect
         template_detect = message.text is not None and message.text.find(TEMPLATE_BRACKET[0]) != -1
         if template_detect:

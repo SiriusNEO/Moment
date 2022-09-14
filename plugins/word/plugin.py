@@ -17,9 +17,9 @@ class Word_Plugin(Plugin):
                 doc = PLUGIN_DOC
             )
 
+    
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         if message.text is not None:
             if re.match(COMMAND_PATTERN, message.text) is not None:
                 ge_pos = message.text.find("个")

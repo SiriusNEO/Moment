@@ -35,10 +35,8 @@ class Browser_Plugin(Plugin):
         self.task_lock = False
         self.task_cnt = 0
     
-
+    @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:
-        assert self._setup_flag
-
         if message.text is not None:
             cmd_args = message.text.split(" ")
 
