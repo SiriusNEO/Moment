@@ -1,21 +1,21 @@
 # Moment user config template
 
 name:
-    Moment
+    moment-aiocqhttp-test
 
 env:
     CentOS
 
 platform:
-    graia-v4
+    aiocqhttp
 
-graia-v4:
-    host:          # mirai 的地址
+aiocqhttp:
+    api-root:
+        cqhttp host+port  # 若使用反向websocket, 无需此项. 否则若使用http, 填写cqhttp的host+post
+    host:          # aiocqhttp server 的地址
         your-host
-    port:          # mirai 的端口号
+    port:          # aiocqhttp server 的端口号
         your-port
-    author-key:    # mah 的 author key
-        your-author-key
     account:       # 机器人qq号
         your-account
     root-accounts: #可以对机器人发送更高命令的用户的qq号
@@ -24,5 +24,5 @@ graia-v4:
     working-group: # 工作的群聊
         your-working-qq-group
 
-plugins:
+plugins: # 想要开启的插件
     - Help

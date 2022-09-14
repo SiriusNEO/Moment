@@ -1,0 +1,21 @@
+# Moment user config template
+
+name:
+    moment-shell-test
+
+env:
+    CentOS
+
+platform:
+    shell
+
+shell:
+    username:      # 用于与机器人对话的用户名
+      sirius
+    root-accounts: # 可以对机器人发送更高命令的用户
+      - sirius
+    input-offset:  # 此项可删掉. 表示控制input往右偏移的单位数.
+      70
+
+plugins: # 想要开启的插件
+    - Help

@@ -32,10 +32,12 @@ checkPassed = (CONFIG.is_in("host", prefix=PLATFORM) and
                CONFIG.is_in("root-accounts", prefix=PLATFORM) and
                CONFIG.is_in("working-group", prefix=PLATFORM))
 
-CONFIG_TEMPLATE = """aiohttp:
-    host:          # aiohttp server 的地址
+CONFIG_TEMPLATE = """aiocqhttp:
+    api-root:
+        cqhttp host+port  # 若使用反向websocket, 无需此项. 否则若使用http, 填写cqhttp的host+post
+    host:          # aiocqhttp server 的地址
         your-host
-    port:          # aiohttp server 的端口号
+    port:          # aiocqhttp server 的端口号
         your-port
     account:       # 机器人qq号
         your-account
@@ -62,7 +64,19 @@ bot = Bot(platform=PLATFORM, config=CONFIG)
 """
     aiocqhttp initialization
 """
-cqhttp = CQHttp()
+
+api_root = None
+if CONFIG.is_in("api-root", prefix=PLATFORM)
+    api_root = CONFIG.get("api-root", prefix=PLATFORM)
+    if api_root == "":
+        api_root = None
+
+if api_root is None:
+    Log.info("检测到 api-root 字段, 使用反向 websocket 与 CQHTTP 通信")
+    cqhttp = CQHttp()
+else:
+    Log.info("检测到 api-root 字段, 使用 http 与 CQHTTP 通信")
+    cqhttp = CQHttp(api_root=api_root)
 
 """
     send method

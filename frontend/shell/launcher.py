@@ -47,7 +47,7 @@ DEFAULT_OFFSET = 70
 input_offset = None # default
 if CONFIG.is_in("input-offset", prefix=PLATFORM):
     config_offset = CONFIG.get("input-offset", prefix=PLATFORM)
-    if str.isdigit(config_offset):
+    if isinstance(config_offset, int) or str.isdigit(config_offset):
         input_offset = int(config_offset)
 
 if input_offset is None:
