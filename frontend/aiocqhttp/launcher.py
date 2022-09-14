@@ -111,10 +111,10 @@ async def group_message_listener(event: Event):
         await bot.handle_message(message)
 
 """
-    Plugin Task (注意等连接上ws再启动)
+    Plugin Task
 """
-@cqhttp.on_websocket_connection
-async def _(event: Event):
+@cqhttp.on_startup
+async def _():
     bot.create_plugin_task(cqhttp.loop)
 
 Log.info("FrontEnd {} 启动完成. {}({}) 正式开始工作.".format(PLATFORM, bot.name, PLATFORM))

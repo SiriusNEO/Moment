@@ -26,7 +26,7 @@ collections:
 
 just_the_docs:
   collections:
-    bulid:
+    build:
       name: 从零部署
     basic:
       name: 基本使用与说明

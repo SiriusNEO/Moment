@@ -156,3 +156,15 @@ Moment 消息类型还有一个重要的概念就是引用（Quote），很多�
 ```
 {quote:n}
 ```
+
+
+
+### 5.4 时间旅行
+
+由于 Python asyncio 的一些奇妙特性，使用 `input()` 时所有 coroutine 会被卡在 `asyncio.sleep` 处。妥协之后，shell 端聊天专门设置了一个特殊命令：
+
+```
+timetravel
+```
+
+在输入框输入此命令后，会进行 10 秒的时间旅行（所有时间流逝 10 秒）。

@@ -17,7 +17,7 @@ from typing import Union, List
 AT_REGEX = "@(\S)+\s"
 IMAGE_REGEX = "\{pic:\S+\}"  # {pic:path}
 QUOTE_REGEX = "\{quote:\S+\}" # {quote:number}
-
+TIME_TRAVEL = "timetravel"
 
 """
     talking in shell.
@@ -50,6 +50,13 @@ class ChatRoom():
 
         while True:
             raw_input = input(" " * self.input_offset + "({}) >>> ".format(self.your_name)).strip()
+            
+            if raw_input == TIME_TRAVEL:
+                for i in range(10):
+                    await asyncio.sleep(1)
+                    print(" " * self.input_offset + "time traveling: " + str(i))
+                continue
+
             if len(raw_input) > 0:
                 user_message = Message()
                 
