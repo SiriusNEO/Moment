@@ -31,6 +31,7 @@ class DataBase:
                 json.dump(self.storage, fp, cls=MessageJSONEncoder)
         
         self.tag_type = {}
+        self.tag_type["shadow_code"] = int
         
         Log.info("database {0} init finish.".format(path))
     

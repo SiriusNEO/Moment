@@ -27,7 +27,6 @@ class Database_Plugin(Plugin):
         self.database = DataBase(CM_PATH)
         self.database.tag_type["id"] = int
         self.database.tag_type["info"] = Message
-        self.database.tag_type["shadow_code"] = int
 
         super().setup(bot)
 
