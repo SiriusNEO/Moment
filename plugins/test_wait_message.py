@@ -11,10 +11,6 @@ class Test_Plugin(Plugin):
                 info = "仅测试用",
                 doc = "没有文档"
             )
-
-    def setup(self, bot: Bot):
-        self.bot = bot
-        super().setup(bot)
     
     @check_setup
     async def handle_message(self, message: Message) -> Union[Message, List[Message], Error]:

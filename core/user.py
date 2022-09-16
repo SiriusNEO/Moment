@@ -16,4 +16,10 @@ class User:
 
     
     def __eq__(self, other: "User"):
+        if self is None and other is None:
+            return True
+
+        if self is None or other is None:
+            return False
+        
         return self.uid == other.uid

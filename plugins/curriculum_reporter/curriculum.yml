@@ -1,0 +1,64 @@
+courses:
+  -
+      name: "计算复杂性"
+      meeting: 412876811
+      passwd: 4717
+      time:
+      - 
+        weekday: 0
+        clock: "08-00"
+      -
+        weekday: 3
+        clock: "08-00"
+  -
+      name: "高级算法"
+      meeting: 789666825
+      passwd: 4034
+      time:
+      -
+        weekday: 4
+        clock: "12-55"
+  -
+      name: "高级组合数学"
+      meeting: 179406347
+      passwd: 1081
+      time:
+      - 
+        weekday: 1
+        clock: "12-55"
+  -
+      name: "量子计算"
+      meeting: 236937764
+      passwd: 9578
+      time:
+      - 
+        weekday: 3
+        clock: "19-00"
+      
+  -
+      name: "深度学习及应用"
+      meeting: 474873147
+      passwd: 7262
+      time:
+      - 
+        weekday: 1
+        clock: "08-00"
+  -
+      name: "计算机视觉"
+      meeting: 119645371
+      passwd: 5605
+      time:
+      - 
+        weekday: 4
+        clock: "08-00"
+  -
+      name: "计算机网络"
+      meeting: 919409400
+      passwd: 6756
+      time:
+      - 
+        weekday: 0
+        clock: "10-00"
+      - 
+        weekday: 2
+        clock: "10-00"
