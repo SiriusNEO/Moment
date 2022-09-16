@@ -31,11 +31,15 @@ class Message:
         if not self.pic == other.pic:
             return False
 
+        """
+        not consider this
+
         if not self.quote == other.quote:
             return False
         
         if self.at != other.at:
             return False
+        """
 
         # without sender
 
