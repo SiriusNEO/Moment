@@ -93,6 +93,38 @@ class Replier_Plugin(Plugin):
 
             cmd_args = message.text.split(" ")
 
+            if cmd_args[0] == SEARCH_COMMAND:
+                if len(cmd_args) != 2:
+                    return Error("命令参数个数错误", urge=self.get_name())
+                
+                key_ret, key_id = self.database.query([TagPair(TAG_KEY, Message(cmd_args[1]), 1)])
+                full_ret, full_id = self.database.query([TagPair(TAG_FULL, Message(cmd_args[1]), 1)])
+                
+                result = []
+                result_id = []
+
+                if not isinstance(key_ret, Error):
+                    result += key_ret
+                    result_id += key_id
+                if not isinstance(full_ret, Error):
+                    result += full_ret
+                    result_id += full_id
+
+                reply = Message("key/full查询: ")
+                if len(result) == 0:
+                    reply.text += "很遗憾, 查询结果为空"
+                else:
+                    reply.text += "共有 {0} 条数据:\n".format(len(result))
+                    # copy from database plugin
+                    for i in range(len(result)):
+                        if len(result) == 1:
+                            reply.text += self.database.display_line(result[i], result_id[i], False)
+                        else:
+                            reply.text += self.database.display_line(result[i], result_id[i])
+                        if i < len(result)-1:
+                            reply.text += "\n"
+                return reply
+
             if cmd_args[0] in OLD_CM_COMMAND:
                 if len(cmd_args) < 2 or len(cmd_args) > 3:
                     return Error("命令参数个数错误", urge=self.get_name())
@@ -109,7 +141,11 @@ class Replier_Plugin(Plugin):
                 else:
                     if len(cmd_args) == 3:
                         if cmd_args[2] not in [TAG_KEY, TAG_FULL]:
-                            return Error("属性只能是key或者full", urge=self.get_name())
+                            # return Error("属性只能是key或者full", urge=self.get_name())
+                            error = self.database.new([TagPair(TAG_FULL, Message(cmd_args[1]), 0), TagPair(TAG_CM, Message(cmd_args[2]), 0)])
+                            if isinstance(error, Error):
+                                return error
+                            return Message("添加成功!")
                         tag = cmd_args[2]
                     else:
                         tag = TAG_FULL
@@ -147,35 +183,39 @@ class Replier_Plugin(Plugin):
         full_ret, full_ret_id = self.database.query([full_tp])
 
         if not isinstance(key_ret, Error) and len(key_ret) > 0:
-            for ret_line in key_ret:
-                if TAG_CM in ret_line:
-                    hash_key = key_ret_id[key_ret.index(ret_line)]
-                    if hash_key in self._timelock_dict:
-                        if self._timelock_dict[hash_key] <= time.time():
-                            self._timelock_dict.pop(hash_key)
-                        else:
-                            return Error("不应期")
+            ret_line = random.choice(key_ret)
+            if TAG_CM in ret_line:
+                hash_key = key_ret_id[key_ret.index(ret_line)]
+                if hash_key in self._timelock_dict:
+                    if self._timelock_dict[hash_key] <= time.time():
+                        self._timelock_dict.pop(hash_key)
+                    else:
+                        return Error("不应期")
 
-                    assert type(ret_line[TAG_CM]) == list
-                    if not TAG_ACTIVE in ret_line:
-                        self._timelock_dict[hash_key] = self._get_next()
-                    return self.pool_pass(ret_line[TAG_CM])
+                assert type(ret_line[TAG_CM]) == list
+                if not TAG_ACTIVE in ret_line:
+                    self._timelock_dict[hash_key] = self._get_next()
+                return self.pool_pass(ret_line[TAG_CM])
+            else:
+                return Error("回复中无cm词条")
 
         if not isinstance(full_ret, Error) and len(full_ret) > 0:
-            for ret_line in full_ret:
-                if TAG_CM in ret_line:
-                    hash_key = full_ret_id[full_ret.index(ret_line)]
-                    # Log.info(hash_key)
-                    if hash_key in self._timelock_dict:
-                        if self._timelock_dict[hash_key] <= time.time():
-                            self._timelock_dict.pop(hash_key)
-                        else:
-                            return Error("不应期")
-                    
-                    assert type(ret_line[TAG_CM]) == list
-                    if not TAG_ACTIVE in ret_line:
-                        self._timelock_dict[hash_key] = self._get_next()
-                    return self.pool_pass(ret_line[TAG_CM])
+            ret_line =  random.choice(full_ret)
+            if TAG_CM in ret_line:
+                hash_key = full_ret_id[full_ret.index(ret_line)]
+                # Log.info(hash_key)
+                if hash_key in self._timelock_dict:
+                    if self._timelock_dict[hash_key] <= time.time():
+                        self._timelock_dict.pop(hash_key)
+                    else:
+                        return Error("不应期")
+                
+                assert type(ret_line[TAG_CM]) == list
+                if not TAG_ACTIVE in ret_line:
+                    self._timelock_dict[hash_key] = self._get_next()
+                return self.pool_pass(ret_line[TAG_CM])
+            else:
+                return Error("回复中无cm词条")
 
         # 模板
         for line in self.database.storage:

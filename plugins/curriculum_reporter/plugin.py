@@ -64,6 +64,9 @@ class Curriculum_Reporter_Plugin(Plugin):
         while True:
             await asyncio.sleep(60)
 
+            if self.banned:
+                continue
+
             next_datetime = datetime.datetime.now() + datetime.timedelta(minutes=5)
             # Log.info(next_datetime)
             try:

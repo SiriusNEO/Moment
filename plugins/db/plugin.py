@@ -108,7 +108,7 @@ class Database_Plugin(Plugin):
                 elif len(result) > QUERY_DISPLAY_THRESHOLD:
                     reply.text = "共有 {0} 条数据, 仅显示最新 {1} 条:\n".format(len(result), QUERY_DISPLAY_THRESHOLD)
                     for i in range(len(result)-QUERY_DISPLAY_THRESHOLD, len(result)):
-                        reply.text += self._display_line(result[i], result_id[i])
+                        reply.text += self.database.display_line(result[i], result_id[i])
                         if i < len(result)-1:
                             reply.text += "\n"
                 else:
@@ -116,9 +116,9 @@ class Database_Plugin(Plugin):
                     for i in range(len(result)):
                         # to do: 更好的显示方式
                         if len(result) == 1:
-                            reply.text += self._display_line(result[i], result_id[i], False)
+                            reply.text += self.database.display_line(result[i], result_id[i], False)
                         else:
-                            reply.text += self._display_line(result[i], result_id[i])
+                            reply.text += self.database.display_line(result[i], result_id[i])
                         if i < len(result)-1:
                             reply.text += "\n"
         # 1 modify
@@ -174,61 +174,6 @@ class Database_Plugin(Plugin):
                 self.database.write_back()
                 await self.send("[{}]({}) 自动存档完成, 数据与云端同步.".format(self.get_name(), Log.show_time()))
 
-
-    """
-        info_cut: 过长信息截断，用 ... 代替
-    """
-    @staticmethod
-    def _info_cut(text: str):
-        if len(text) > MAX_INFO_LEN:
-            return text[0:MAX_INFO_LEN] + "..."
-        return text
-
-    """
-        display_line: 显示数据库中的一行 (line)
-    """
-    def _display_line(self, line: dict, id: int, limit = True):
-        ret = "{0}: ".format(id)
-        if not line:
-            # 空数据条目
-            return ret + "空数据"
-
-        for tag in line:
-            if tag == SHADOW_CODE:
-                continue
-            if self.database.tag_type[tag] == list:
-                ret += "{0}=".format(tag)
-
-                if len(line[tag]) != 1:
-                    ret += "["
-                
-                if limit:
-                    for val in line[tag][:MAX_LIST_ITEMS]:
-                        ret += val.to_readable_str(limit) + ", "
-                else:
-                    for val in line[tag]:
-                        # 一定是 msg
-                        ret += val.to_readable_str(limit) + ", "
-                
-                if len(line[tag]) > 0:
-                    ret = ret[0: len(ret)-2]
-                
-                if limit and len(line[tag]) > MAX_LIST_ITEMS:
-                    ret = ret + "..."
-
-                if len(line[tag]) != 1:
-                    ret += "]"
-            elif self.database.tag_type[tag] == dict:
-                ret += "{0}={1}".format(tag, "dict")
-            elif self.database.tag_type[tag] == Message:
-                ret += "{0}={1}".format(tag, line[tag].to_readable_str(limit))
-            else:
-                if limit:
-                    ret += "{0}={1}".format(tag, self._info_cut(str(line[tag])))
-                else:
-                    ret += "{0}={1}".format(tag, str(line[tag]))
-            ret += "; "
-        return ret
 
     """
         val_resolve: 解析 tag_pair 的 val 并赋予真实值

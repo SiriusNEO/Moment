@@ -28,7 +28,7 @@ courses:
         clock: "12-55"
   -
       name: "量子计算"
-      meeting: 236937764
+      meeting: 43698902748
       passwd: 9578
       time:
       - 
@@ -62,3 +62,11 @@ courses:
       - 
         weekday: 2
         clock: "10-00"
+  -
+      name: "学术前沿"
+      meeting: 222685636
+      passwd: 3351
+      time:
+      - 
+        weekday: 2
+        clock: "08-00"

@@ -10,12 +10,14 @@ PLUGIN_DOC = """键值回复插件要求数据库中的信息拥有 key 或者 f
 - 多个key/full需要每个都匹配才算匹配成功
 - 多个cm会一起发回去
 
-兼容老命令:
+兼容命令:
     - {} <关键词> (无引用内容. 表示直接触发一个key或者full)
+    - {} <关键词> <值> (直接添加一个full为关键词, cm为值的条目)
     - {} <关键词> <属性> (属性可设key/full, 默认为full. 必须有引用内容. 相当于key=关键词 cm=%this)
     - {} {} <关键词> (删掉key与full为这个的数据条目)
+    - {} <关键词> (搜索key或者full为这个的数据条目)
     
 魔法:
     - 不应期机制. 为了和谐的群环境, 每次回复成功会冷静一段时间. 使用 {} 来清除不应期. 使用 {} 标签 (随便赋一个int) 来使此词条无不应期.
     - pool 机制. 暂略.
-    - template 机制. 暂略.""".format(OLD_CM_COMMAND, OLD_CM_COMMAND, OLD_CM_COMMAND, OLD_DEL_COMMAND, REFLESH_COMMAND, TAG_ACTIVE)
+    - template 机制. 暂略.""".format(OLD_CM_COMMAND, OLD_CM_COMMAND, OLD_CM_COMMAND, OLD_CM_COMMAND, OLD_DEL_COMMAND, SEARCH_COMMAND, REFLESH_COMMAND, TAG_ACTIVE)

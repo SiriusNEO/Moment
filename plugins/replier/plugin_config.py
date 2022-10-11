@@ -13,3 +13,5 @@ TEMPLATE_BRACKET = ["{", "}"]
 POOL_BRACKET = ["<", ">"]
 
 REFLESH_COMMAND = "timejump"
+
+SEARCH_COMMAND = "search"

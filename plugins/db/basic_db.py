@@ -5,7 +5,7 @@ from core.error import Error
 from core.message import Message
 from plugins.db.db_event import TagPair
 
-from plugins.db.plugin_config import WORD_DEL, WORD_CLR, SHADOW_CODE, ID
+from plugins.db.plugin_config import WORD_DEL, WORD_CLR, SHADOW_CODE, ID, MAX_LIST_ITEMS
 
 # the file structure depends on the image server
 from core.image import *
@@ -347,11 +347,64 @@ class DataBase:
                 return error
 
         self.storage.append(new_line[0])
-        
+    
+
     def display(self):
         print("database ({0}) start print: ".format(self.path))
 
         for line in self.storage:
             print(line)
+    
+    """
+        info_cut: 过长信息截断，用 ... 代替
+    """
+    @staticmethod
+    def _info_cut(text: str):
+        if len(text) > MAX_INFO_LEN:
+            return text[0:MAX_INFO_LEN] + "..."
+        return text
+
+    def display_line(self, line: dict, id: int, limit = True):
+        ret = "{0}: ".format(id)
+        if not line:
+            # 空数据条目
+            return ret + "空数据"
+
+        for tag in line:
+            if tag == SHADOW_CODE:
+                continue
+            if self.tag_type[tag] == list:
+                ret += "{0}=".format(tag)
+
+                if len(line[tag]) != 1:
+                    ret += "["
+                
+                if limit:
+                    for val in line[tag][:MAX_LIST_ITEMS]:
+                        ret += val.to_readable_str(limit) + ", "
+                else:
+                    for val in line[tag]:
+                        # 一定是 msg
+                        ret += val.to_readable_str(limit) + ", "
+                
+                if len(line[tag]) > 0:
+                    ret = ret[0: len(ret)-2]
+                
+                if limit and len(line[tag]) > MAX_LIST_ITEMS:
+                    ret = ret + "..."
+
+                if len(line[tag]) != 1:
+                    ret += "]"
+            elif self.tag_type[tag] == dict:
+                ret += "{0}={1}".format(tag, "dict")
+            elif self.tag_type[tag] == Message:
+                ret += "{0}={1}".format(tag, line[tag].to_readable_str(limit))
+            else:
+                if limit:
+                    ret += "{0}={1}".format(tag, self._info_cut(str(line[tag])))
+                else:
+                    ret += "{0}={1}".format(tag, str(line[tag]))
+            ret += "; "
+        return ret
 
                 

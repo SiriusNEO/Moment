@@ -49,12 +49,12 @@ class Autotalk_Plugin(Plugin):
     @check_setup
     async def plugin_task(self):
         while True:
-            await asyncio.sleep(WAIT)
+            await asyncio.sleep(60)
 
             if self.banned:
                 continue
             
-            # Log.info("{} Working".format(self.get_name()))
+            Log.info("{} Working. time: ".format(self.get_name()), time.localtime(self.next_happen_time))
             
             if len(self.database.storage) == 0:
                 continue
@@ -62,14 +62,17 @@ class Autotalk_Plugin(Plugin):
             now_time = time.time()
             now_time_local = time.localtime(now_time)
 
-            if now_time_local.tm_hour == 12 and now_time_local.tm_min == 0 and now_time_local.tm_sec == 0:
+            if now_time_local.tm_hour == 12 and now_time_local.tm_min == 0:
                 # 启动时间, roll 一次
                 self.next_happen_time = Autotalk_Plugin()._get_next()
-            if now_time_local.tm_hour >= 12 and now_time_local.tm_hour <= 24 and now_time_local.tm_sec == 0:
+            if now_time_local.tm_hour >= 12 and now_time_local.tm_hour <= 24:
                 if self.next_happen_time <= now_time:
-                    await self.send(random.choice(self.database.storage)[TAG_CONTENT])
+                    try:
+                        await self.send(random.choice(self.database.storage)[TAG_CONTENT])
+                    except:
+                        pass
                     self.next_happen_time = Autotalk_Plugin()._get_next()
     
     @staticmethod
     def _get_next():
-        return time.time() + max(int(random.gauss(40, 10)), 1)  * 60
+        return time.time() + max(int(random.gauss(30, 5)), 1) * 60

@@ -66,6 +66,8 @@ class Message:
             if len(ret) > 0:
                 ret += "|"
             ret += "图"
+            if self.pic.pic_path != None:
+                ret += "({})".format(self.pic.pic_path)
         
         if self.quote != None:
             if len(ret) > 0:
