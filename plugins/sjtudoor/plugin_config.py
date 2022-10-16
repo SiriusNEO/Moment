@@ -7,7 +7,6 @@ DORMITORY_MEMBERS_MAP = {
     "598721573": "zms"
 }
 
-WAIT = 1
 CLOSE_DOOR_TIME = 5
 UNSET_PROXIES = "unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy"
 EXPIRE_TIME = 60*60

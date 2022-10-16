@@ -5,6 +5,9 @@ BACKUP_COMMAND = "mombackup"
 RELOAD_COMMAND = "momreload"
 ROLLBACK_COMMAND = "momrollback"
 
+SHOWDB_COMMAND = "showdb"
+USEDB_COMMAND = "usedb"
+
 RECORD_COMMAND = "recording"
 RECORD_MAX_NUM = 10
 
@@ -34,7 +37,7 @@ MODIFY_REGEX = "^(del|clr|([a-z]+)(=|\+|-)(\S+)(\ ([a-z]+)(=|\+|-)(\S+))*)$"
 #  userdb.json
 
 CM_PATH = "local/cmdb.json"
-BACKUP_PATH = "local/cmdb_backup.json"
+BACKUP_PATH_SUFFIX = "_backup"
 
 QUERY_DISPLAY_THRESHOLD = 10
 SEND_THRESHOLD = 3
@@ -52,7 +55,5 @@ THIS = "%this"
 ABOVE  = "%above"
 NEXT = "%next"
 SPLIT_THIS = "%split"
-
-WAIT = 60
 
 AUTO_SAVE_TIME = [13, 20]

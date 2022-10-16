@@ -17,9 +17,11 @@ PLUGIN_DOC = """数据库插件支持两种命令: 通用数据库命令和特�
     - [3] (表示定位第3条数据. 也可以写成 [id=3])
 
 特殊命令:
+    - {} (查看所有已注册的数据库)
+    - {} <db_name/db_id> (切换数据库)
     - {} (数据写回到文件中)
     - {} (数据备份)
     - {} (重新从文件中载回数据)
     - {} (备份回滚)
 
-注: 特殊命令需要权限. """.format(COMMIT_COMMAND, BACKUP_COMMAND, RELOAD_COMMAND, ROLLBACK_COMMAND)
+注: 部分特殊命令需要权限. """.format(SHOWDB_COMMAND, USEDB_COMMAND, COMMIT_COMMAND, BACKUP_COMMAND, RELOAD_COMMAND, ROLLBACK_COMMAND)

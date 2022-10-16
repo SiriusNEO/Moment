@@ -4,7 +4,6 @@ from core.bot import Bot
 from plugins.judge.plugin_config import *
 from plugins.judge.plugin_doc import PLUGIN_DOC
 
-from plugins.db.basic_db import DataBase
 from plugins.db.db_event import TagPair
 
 import random
@@ -20,7 +19,7 @@ class Judge_Plugin(Plugin):
             )
 
     def setup(self, bot: Bot):
-        self.database = DataBase(JUDGE_DB_PATH)
+        self.database = bot.invoke_method("Database", "register_database", "judge", JUDGE_DB_PATH)
         self.database.tag_type[TAG_CONTENT] = Message
 
         self.start_flag = False

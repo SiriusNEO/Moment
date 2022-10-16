@@ -61,12 +61,7 @@ class Curriculum_Reporter_Plugin(Plugin):
     
     @check_setup
     async def plugin_task(self):
-        while True:
-            await asyncio.sleep(60)
-
-            if self.banned:
-                continue
-
+        async for _ in Ticker(self, 60):
             next_datetime = datetime.datetime.now() + datetime.timedelta(minutes=5)
             # Log.info(next_datetime)
             try:

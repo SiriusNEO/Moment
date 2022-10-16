@@ -5,7 +5,7 @@ from core.error import Error
 from core.message import Message
 from plugins.db.db_event import TagPair
 
-from plugins.db.plugin_config import WORD_DEL, WORD_CLR, SHADOW_CODE, ID, MAX_LIST_ITEMS
+from plugins.db.plugin_config import WORD_DEL, WORD_CLR, SHADOW_CODE, ID, MAX_LIST_ITEMS, BACKUP_PATH_SUFFIX
 
 # the file structure depends on the image server
 from core.image import *
@@ -32,23 +32,32 @@ class DataBase:
         
         self.tag_type = {}
         self.tag_type["shadow_code"] = int
+        self.tag_type["id"] = int
         
         Log.info("database {0} init finish.".format(path))
     
-    def load_from(self, path=None):
-        if path is None:
-            path = self.path
+    @staticmethod
+    def _path_with_suffix(path, suffix):
+        dot_pos = path.rfind(".")
+        if dot_pos == -1:
+            return path + suffix
+        file_name, ext_name = path[:dot_pos], path[dot_pos+1:]
+        return file_name + suffix + "." + ext_name
+
+    def load_from(self, path, backup=False):
+        path = self.path
+        if backup:
+            path = self._path_with_suffix(path, BACKUP_PATH_SUFFIX)
         try:
             with open(path, "r") as fp:
                 self.storage = list(json.load(fp, object_hook=decode_hook))
         except Exception as e:
             return Error(e.args)
-
     
-    def write_back(self, path=None):
-        if path is None:
-            path = self.path
-        
+    def write_back(self, backup=False):
+        path = self.path
+        if backup:
+            path = self._path_with_suffix(path, BACKUP_PATH_SUFFIX)
         with open(path, "w") as fp:
             json.dump(self.storage, fp, cls=MessageJSONEncoder)
 

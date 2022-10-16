@@ -36,7 +36,7 @@ class Star_Plugin(Plugin):
     
 
     def setup(self, bot: Bot):
-        self.database = bot.require_info(plugin_name="Database", member_name="database")
+        self.database = bot.require_info(plugin_name="Database", member_name="cur_database")
         self.database.tag_type[TAG_STAR] = Message
         super().setup(bot)
     

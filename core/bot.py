@@ -86,7 +86,15 @@ class Bot:
         if not hasattr(plugin, member_name):
             raise Exception("require info error: 插件{}不含该数据成员: {}".format(plugin_name, member_name))
 
-        return getattr(plugin, member_name)    
+        return getattr(plugin, member_name)
+    
+    """
+        插件依赖. 
+        有时 B 插件需要调用 A 插件的方法, 在 setup 时由 B 插件向 A 插件发起一个 invoke_method
+    """
+    def invoke_method(self, plugin_name: str, method_name: str, *args):
+        plugin_method = self.require_info(plugin_name, method_name)
+        return plugin_method(*args)
 
 
     def install(self, plugin: Plugin):

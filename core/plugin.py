@@ -15,6 +15,35 @@ from core.core_config import MSG_WAIT_GAP
 import queue
 import functools
 
+
+"""
+    Ticker
+    定时触发, 常用于 plugin_task
+"""
+class Ticker:
+    
+    def __init__(self, plugin, time_delta):
+        self.plugin = plugin
+        self.time_delta = time_delta
+        self.total_time = 0
+    
+    def __aiter__(self):
+        return self
+    
+    async def __anext__(self):
+        await asyncio.sleep(self.time_delta)
+        self.total_time += self.time_delta
+
+        # ban block
+        while self.plugin.banned:
+            await asyncio.sleep(1)
+
+        return self.total_time
+
+"""
+    check_setup decorator
+    为一个 method 做一个查看其是否 setup 的 check
+"""
 def check_setup(method):
     @functools.wraps(method)
     async def wrapper(self, *args, **kwargs):
@@ -22,6 +51,7 @@ def check_setup(method):
             raise Exception("执行了未安装的插件: {}".format(self.get_name()))
         return await method(self, *args, **kwargs)
     return wrapper
+
 
 class Plugin:
 

@@ -4,7 +4,6 @@ from core.bot import Bot
 from plugins.autotalk.plugin_config import *
 from plugins.autotalk.plugin_doc import PLUGIN_DOC
 
-from plugins.db.basic_db import DataBase
 from plugins.db.db_event import TagPair
 
 from utils.log import Log
@@ -25,7 +24,7 @@ class Autotalk_Plugin(Plugin):
 
 
     def setup(self, bot: Bot):
-        self.database = DataBase(AUTOTALK_DB_PATH)
+        self.database = bot.invoke_method("Database", "register_database", "autotalk", AUTOTALK_DB_PATH)
         self.database.tag_type[TAG_CONTENT] = Message
         self.next_happen_time = Autotalk_Plugin()._get_next()
         super().setup(bot)
@@ -48,13 +47,8 @@ class Autotalk_Plugin(Plugin):
     
     @check_setup
     async def plugin_task(self):
-        while True:
-            await asyncio.sleep(60)
-
-            if self.banned:
-                continue
-            
-            Log.info("{} Working. time: ".format(self.get_name()), time.localtime(self.next_happen_time))
+        async for _ in Ticker(self, 60):
+            # Log.info("{} Working. time: ".format(self.get_name()), time.localtime(self.next_happen_time))
             
             if len(self.database.storage) == 0:
                 continue

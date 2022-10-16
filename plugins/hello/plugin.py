@@ -18,16 +18,11 @@ class Hello_Plugin(Plugin):
     
     @check_setup
     async def plugin_task(self):
-        await asyncio.sleep(START_WAIT)
-
+        # start wait
+        await asyncio.sleep(10)
         await self.send(HELLO_WORD)
 
-        while True:
-            await asyncio.sleep(WAIT)
-            
-            if self.banned:
-                continue
-
+        async for _ in Ticker(self, 1):
             # Log.info("{} Working".format(self.get_name()))
 
             now_datetime = datetime.datetime.now()

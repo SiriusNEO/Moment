@@ -4,7 +4,6 @@ from plugins.alarm.plugin_config import *
 from core.plugin import *
 from core.bot import Bot
 
-from plugins.db.basic_db import DataBase
 from plugins.db.db_event import TagPair
 from plugins.db.plugin_config import WORD_DEL
 
@@ -25,7 +24,7 @@ class Alarm_Plugin(Plugin):
     
 
     def setup(self, bot: Bot):
-        self.database = DataBase(ALARM_DB_PATH)
+        self.database = bot.invoke_method("Database", "register_database", "alarm", ALARM_DB_PATH)
         self.database.tag_type[TAG_AL] = Message
         self.database.tag_type[TAG_CONTENT] = Message
         super().setup(bot)
@@ -73,12 +72,7 @@ class Alarm_Plugin(Plugin):
     
     @check_setup
     async def plugin_task(self):
-        while True:
-            await asyncio.sleep(WAIT)
-            
-            if self.banned:
-                continue
-            
+        async for _ in Ticker(self, 1):    
             # Log.info("{} Working".format(self.get_name()))
             
             now_time = time.localtime(time.time())

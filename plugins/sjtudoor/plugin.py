@@ -70,9 +70,7 @@ class SJTUDoor_Plugin(Plugin):
     
     @check_setup
     async def plugin_task(self):
-        while True:
-            await asyncio.sleep(WAIT)
-
+        async for _ in Ticker(self, 1):
             # session expire
             now_time = time.time()
             if now_time - self.last_refresh_time > EXPIRE_TIME:
